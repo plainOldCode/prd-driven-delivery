@@ -1,19 +1,18 @@
 # Task Lifecycle And Status Rules Spec
 
-Status: Planned next feature. This document describes the next implementation slice; the current codebase still only exposes health and read-only task list behavior.
+Status: Planned next feature. This document describes the next implementation slice; the current codebase already supports task intake, but does not yet enforce lifecycle transitions.
 
 Source PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](../prd/task-lifecycle-and-status-rules.md)
 
 ## Scope Summary
 
-Add one meaningful workflow feature on top of the existing task list:
+Extend the existing task intake flow with one meaningful workflow feature set:
 
-- task creation
 - constrained status transitions
 - blocked-task reasoning
 - read-only handling for completed work
 
-This spec is intended to drive backend, frontend, and e2e implementation together.
+This spec is intended to drive backend, frontend, and e2e implementation together on top of the existing create flow.
 
 ## Backend Contract
 
@@ -25,22 +24,22 @@ This spec is intended to drive backend, frontend, and e2e implementation togethe
 
 `POST /api/tasks`
 
-- Creates a new task
-- Request body:
-
-```json
-{
-  "title": "Prepare release notes"
-}
-```
-
-- Response body:
+- Already exists from the business-task intake slice
+- Continues to create a new task with initial status `TODO`
+- Request and response shape should stay aligned with [`docs/spec/business-task-intake-and-planning.md`](business-task-intake-and-planning.md)
+- Lifecycle work should extend that existing contract rather than replace it
+- Response should extend the current task shape with lifecycle-specific fields when needed, such as `blockedReason` and `updatedAt`
 
 ```json
 {
   "id": 12,
   "title": "Prepare release notes",
   "status": "TODO",
+  "customerRequest": "Customer needs a visible delivery task",
+  "requestedWork": "Prepare business task intake flow",
+  "targetDeliveryDate": "2026-04-10",
+  "buildEstimate": "3 engineering days",
+  "owner": "Sky",
   "blockedReason": null,
   "createdAt": "2026-03-21T08:00:00Z",
   "updatedAt": "2026-03-21T08:00:00Z"
@@ -77,8 +76,7 @@ Validation and transition failures should return a machine-readable response:
 
 ### Field Rules
 
-- `title` is required
-- `title` length: 3 to 100 characters after trimming
+- The existing business-task intake fields remain required as defined in [`docs/spec/business-task-intake-and-planning.md`](business-task-intake-and-planning.md)
 - `blockedReason` is optional except when status is `BLOCKED`
 - `blockedReason` length: 10 to 200 characters after trimming when provided
 

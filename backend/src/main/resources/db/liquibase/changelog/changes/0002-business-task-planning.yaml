@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0003-add-business-task-planning-columns
+      author: codex
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: sample_task
+                columnName: customer_request
+      changes:
+        - addColumn:
+            tableName: sample_task
+            columns:
+              - column:
+                  name: customer_request
+                  type: varchar(255)
+              - column:
+                  name: requested_work
+                  type: varchar(255)
+              - column:
+                  name: target_delivery_date
+                  type: date
+              - column:
+                  name: build_estimate
+                  type: varchar(60)
+              - column:
+                  name: owner_name
+                  type: varchar(80)
+        - sql:
+            sql: |
+              UPDATE sample_task
+              SET
+                customer_request = CASE
+                  WHEN title = 'Wire backend to frontend' THEN 'Frontend review needs live task data from the backend'
+                  WHEN title = 'Prepare k3s test namespace' THEN 'Platform review needs a reusable QA namespace check'
+                  ELSE 'Internal delivery planning request'
+                END,
+                requested_work = CASE
+                  WHEN title = 'Wire backend to frontend' THEN 'Connect the Vue task board to backend task APIs'
+                  WHEN title = 'Prepare k3s test namespace' THEN 'Prepare a k3s namespace smoke path for PR environments'
+                  ELSE title
+                END,
+                target_delivery_date = CASE
+                  WHEN title = 'Wire backend to frontend' THEN '2026-03-28'
+                  WHEN title = 'Prepare k3s test namespace' THEN '2026-03-25'
+                  ELSE '2026-03-31'
+                END,
+                build_estimate = CASE
+                  WHEN title = 'Wire backend to frontend' THEN '2 engineering days'
+                  WHEN title = 'Prepare k3s test namespace' THEN '1 engineering day'
+                  ELSE 'TBD'
+                END,
+                owner_name = 'Sky'
+              WHERE customer_request IS NULL
+                 OR requested_work IS NULL
+                 OR target_delivery_date IS NULL
+                 OR build_estimate IS NULL
+                 OR owner_name IS NULL;
+        - addNotNullConstraint:
+            tableName: sample_task
+            columnName: customer_request
+            columnDataType: varchar(255)
+        - addNotNullConstraint:
+            tableName: sample_task
+            columnName: requested_work
+            columnDataType: varchar(255)
+        - addNotNullConstraint:
+            tableName: sample_task
+            columnName: target_delivery_date
+            columnDataType: date
+        - addNotNullConstraint:
+            tableName: sample_task
+            columnName: build_estimate
+            columnDataType: varchar(60)
+        - addNotNullConstraint:
+            tableName: sample_task
+            columnName: owner_name
+            columnDataType: varchar(80)

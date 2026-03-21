@@ -1,6 +1,6 @@
 # Business Task Intake And Planning PRD
 
-Status: Candidate next feature. This PRD describes a business-facing task slice that could follow the current read-only task demo.
+Status: Implemented initial slice. This PRD now backs the current business-task intake flow in the repo.
 
 ## Background
 

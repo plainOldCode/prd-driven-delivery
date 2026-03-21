@@ -41,16 +41,17 @@ The current codebase proves the delivery path with a small working slice:
 
 - `GET /api/health`
 - `GET /api/tasks`
-- Vue rendering of live backend health and seeded MariaDB task rows
-- Playwright smoke coverage for API health, API task reads, and the home page
+- `POST /api/tasks` with validated business planning fields
+- Vue rendering of live backend health, business-task intake, and planning-oriented task rows
+- Playwright smoke coverage for API health, API task reads, API task creation, and UI create/read paths
 - Local Docker and `k3d` validation through the Helm chart
 
 ## Documented Next Feature
 
 The task lifecycle package under `docs/` is intentionally the next planned implementation step, not a claim that it already exists in code.
 
-- task creation via `POST /api/tasks`
 - constrained status transitions via `PATCH /api/tasks/{id}`
+- lifecycle rules layered on top of the existing task intake flow
 - `blockedReason` validation and UI treatment
 - richer task lifecycle e2e scenarios
 - Liquibase schema expansion for `blocked_reason` and `updated_at`
@@ -129,8 +130,8 @@ The supporting note for that workflow lives in [`docs/ai-workflow.md`](docs/ai-w
 
 Current documentation examples:
 
+- Implemented business-task slice: [`docs/prd/business-task-intake-and-planning.md`](docs/prd/business-task-intake-and-planning.md) and [`docs/spec/business-task-intake-and-planning.md`](docs/spec/business-task-intake-and-planning.md)
 - Planned implementation slice: [`docs/prd/task-lifecycle-and-status-rules.md`](docs/prd/task-lifecycle-and-status-rules.md) and [`docs/spec/task-lifecycle-and-status-rules.md`](docs/spec/task-lifecycle-and-status-rules.md)
-- PRD-stage business planning slice: [`docs/prd/business-task-intake-and-planning.md`](docs/prd/business-task-intake-and-planning.md)
 
 ## Workspace Shape
 

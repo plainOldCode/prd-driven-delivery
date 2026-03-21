@@ -1,8 +1,4 @@
-export interface SampleTaskDto {
-  id: number;
-  title: string;
-  status: string;
-  createdAt: string;
+export interface CreateBusinessTaskRequest {
   customerRequest: string;
   requestedWork: string;
   targetDeliveryDate: string;

@@ -2,15 +2,15 @@
 
 ## Background
 
-The current workspace proves that backend, frontend, and e2e-test can connect around a seeded task list.
+The current workspace proves that backend, frontend, and e2e-test can connect around a task list and a business-task intake flow.
 
-That is enough to show wiring, but not enough to show a real feature workflow with product rules, validation, and acceptance criteria.
+That is enough to show wiring and validated create behavior, but not enough to show a real feature workflow with lifecycle rules, blocked-state handling, and acceptance criteria around status transitions.
 
 This feature exists to raise the complexity by one step without becoming a large CRUD system.
 
 ## Problem
 
-The workspace can display tasks, but it cannot express how work should move through a delivery lifecycle.
+The workspace can create and display tasks, but it cannot express how work should move through a delivery lifecycle.
 
 Without explicit lifecycle rules:
 
@@ -29,7 +29,7 @@ Introduce a task lifecycle feature that makes status changes meaningful and test
 
 ## Requirements
 
-1. Users can create a task with a title and an initial status of `TODO`.
+1. The existing task intake flow remains the entry point and creates tasks with an initial status of `TODO`.
 2. Users can move a task through the statuses `TODO`, `IN_PROGRESS`, `BLOCKED`, `READY`, and `DONE`.
 3. If a task is moved to `BLOCKED`, a non-empty `blockedReason` is required.
 4. A task can move to `DONE` only from `READY`.

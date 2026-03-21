@@ -1,30 +1,32 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import WorkspaceCard from "./components/WorkspaceCard.vue";
+import type { CreateBusinessTaskRequest } from "./api/DTO/CreateBusinessTaskRequest";
 import type { HealthDto } from "./api/DTO/HealthDto";
 import type { SampleTaskDto } from "./api/DTO/SampleTaskDto";
 import { fetchHealth } from "./api/health";
-import { fetchTasks } from "./api/tasks";
+import { ApiRequestError } from "./api/http";
+import { createTask, fetchTasks } from "./api/tasks";
 
 const cards = [
   {
     name: "backend",
-    description: "Owns the Kotlin + Spring Boot API and now serves live task data from MariaDB.",
+    description: "Owns the Kotlin + Spring Boot API and now handles business-task intake with validated planning fields.",
     accent: "amber",
   },
   {
     name: "frontend",
-    description: "Uses the backend API for runtime health and seeded task data instead of static-only content.",
+    description: "Turns the PRD into a task intake form, live planning board, and API-backed delivery view.",
     accent: "blue",
   },
   {
     name: "database",
-    description: "Holds the MariaDB Compose setup and the bootstrap SQL consumed by the backend.",
+    description: "Stores seeded planning rows plus the business fields required for customer request, estimate, date, and owner.",
     accent: "green",
   },
   {
     name: "e2e-test",
-    description: "Smoke tests now cover both the API status path and task-driven UI rendering.",
+    description: "Smoke tests cover the read path and the task intake flow across API and UI surfaces.",
     accent: "ink",
   },
   {
@@ -38,6 +40,18 @@ const health = ref<HealthDto | null>(null);
 const tasks = ref<SampleTaskDto[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const submitting = ref(false);
+const submitError = ref<string | null>(null);
+const submitSuccess = ref<string | null>(null);
+const fieldErrors = ref<Record<string, string>>({});
+
+const form = ref<CreateBusinessTaskRequest>({
+  customerRequest: "",
+  requestedWork: "",
+  targetDeliveryDate: "",
+  buildEstimate: "",
+  owner: "",
+});
 
 const healthBadge = computed(() => {
   if (loading.value) {
@@ -51,7 +65,7 @@ const healthBadge = computed(() => {
   return health.value?.status.toLowerCase() ?? "unknown";
 });
 
-onMounted(async () => {
+async function loadWorkspace() {
   try {
     const [healthResponse, taskResponse] = await Promise.all([fetchHealth(), fetchTasks()]);
 
@@ -62,6 +76,43 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+}
+
+function resetForm() {
+  form.value = {
+    customerRequest: "",
+    requestedWork: "",
+    targetDeliveryDate: "",
+    buildEstimate: "",
+    owner: "",
+  };
+}
+
+async function submitTask() {
+  submitting.value = true;
+  submitError.value = null;
+  submitSuccess.value = null;
+  fieldErrors.value = {};
+
+  try {
+    await createTask(form.value);
+    tasks.value = await fetchTasks();
+    submitSuccess.value = "Business task created.";
+    resetForm();
+  } catch (err) {
+    if (err instanceof ApiRequestError) {
+      submitError.value = err.message;
+      fieldErrors.value = err.fieldErrors;
+    } else {
+      submitError.value = err instanceof Error ? err.message : "Unknown error";
+    }
+  } finally {
+    submitting.value = false;
+  }
+}
+
+onMounted(async () => {
+  await loadWorkspace();
 });
 </script>
 
@@ -111,10 +162,57 @@ onMounted(async () => {
         <div class="section-head">
           <div>
             <p class="section-kicker">Backend data</p>
-            <h2>Live tasks from MariaDB</h2>
+            <h2>Business task intake and planning</h2>
           </div>
-          <p class="section-note">Rendered through the Vue API layer from <code>/api/tasks</code>.</p>
+          <p class="section-note">Rendered through the Vue API layer from <code>/api/tasks</code> and <code>POST /api/tasks</code>.</p>
         </div>
+
+        <form class="task-form" @submit.prevent="submitTask">
+          <div class="form-grid">
+            <label class="field">
+              <span>Customer request</span>
+              <input v-model="form.customerRequest" :disabled="submitting" name="customerRequest" />
+              <small v-if="fieldErrors.customerRequest" class="field-error">{{ fieldErrors.customerRequest }}</small>
+            </label>
+
+            <label class="field field-wide">
+              <span>Requested work</span>
+              <textarea v-model="form.requestedWork" :disabled="submitting" name="requestedWork" rows="3" />
+              <small v-if="fieldErrors.requestedWork" class="field-error">{{ fieldErrors.requestedWork }}</small>
+            </label>
+
+            <label class="field">
+              <span>Delivery date</span>
+              <input
+                v-model="form.targetDeliveryDate"
+                :disabled="submitting"
+                name="targetDeliveryDate"
+                type="date"
+              />
+              <small v-if="fieldErrors.targetDeliveryDate" class="field-error">{{ fieldErrors.targetDeliveryDate }}</small>
+            </label>
+
+            <label class="field">
+              <span>Build estimate</span>
+              <input v-model="form.buildEstimate" :disabled="submitting" name="buildEstimate" />
+              <small v-if="fieldErrors.buildEstimate" class="field-error">{{ fieldErrors.buildEstimate }}</small>
+            </label>
+
+            <label class="field">
+              <span>Owner</span>
+              <input v-model="form.owner" :disabled="submitting" name="owner" />
+              <small v-if="fieldErrors.owner" class="field-error">{{ fieldErrors.owner }}</small>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <p v-if="submitSuccess" class="form-message form-message-success">{{ submitSuccess }}</p>
+            <p v-else-if="submitError" class="form-message form-message-error">{{ submitError }}</p>
+            <button class="submit-button" type="submit" :disabled="submitting">
+              {{ submitting ? "Creating..." : "Create business task" }}
+            </button>
+          </div>
+        </form>
 
         <p v-if="loading" class="empty-state">Loading tasks from the backend...</p>
         <p v-else-if="error" class="empty-state">Backend request failed. Check `make backend-run` and retry.</p>
@@ -125,7 +223,26 @@ onMounted(async () => {
               <strong class="task-status" :data-status="task.status.toLowerCase()">{{ task.status }}</strong>
             </div>
             <p class="task-title">{{ task.title }}</p>
-            <p class="task-meta">{{ task.createdAt }}</p>
+            <p v-if="task.requestedWork !== task.title" class="task-requested-work">{{ task.requestedWork }}</p>
+            <p class="task-request">{{ task.customerRequest }}</p>
+            <dl class="task-details">
+              <div>
+                <dt>delivery</dt>
+                <dd>{{ task.targetDeliveryDate }}</dd>
+              </div>
+              <div>
+                <dt>estimate</dt>
+                <dd>{{ task.buildEstimate }}</dd>
+              </div>
+              <div>
+                <dt>owner</dt>
+                <dd>{{ task.owner }}</dd>
+              </div>
+              <div>
+                <dt>created</dt>
+                <dd>{{ task.createdAt }}</dd>
+              </div>
+            </dl>
           </li>
         </ol>
       </section>
@@ -295,6 +412,95 @@ h2 {
   line-height: 1.5;
 }
 
+.task-form {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(22, 32, 51, 0.08);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+.field span {
+  color: #475874;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(22, 32, 51, 0.14);
+  border-radius: 16px;
+  background: rgba(247, 244, 236, 0.92);
+  color: #162033;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 92px;
+}
+
+.field-error {
+  color: #8a260f;
+  font-size: 0.84rem;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.form-message {
+  margin: 0;
+  color: #536178;
+  font-size: 0.92rem;
+}
+
+.form-message-success {
+  color: #0d6b2f;
+}
+
+.form-message-error {
+  color: #8a260f;
+}
+
+.submit-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: #162033;
+  color: #f7f4ec;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .empty-state {
   margin: 0;
   padding: 24px;
@@ -358,10 +564,41 @@ h2 {
   line-height: 1.45;
 }
 
-.task-meta {
+.task-requested-work,
+.task-request {
+  margin: 0 0 10px;
+  color: #41506a;
+  line-height: 1.6;
+}
+
+.task-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin: 0;
-  color: #6d7a8f;
-  font-size: 0.9rem;
+}
+
+.task-details div {
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: #f6f2e7;
+}
+
+.task-details dt {
+  margin-bottom: 6px;
+}
+
+.task-details dd {
+  margin: 0;
+}
+
+.task-request {
+  font-weight: 600;
+}
+
+.task-meta,
+.task-requested-work {
+  margin: 0;
 }
 
 .grid {
@@ -390,6 +627,16 @@ code {
 
   .section-note {
     max-width: none;
+  }
+
+  .form-grid,
+  .task-details {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 

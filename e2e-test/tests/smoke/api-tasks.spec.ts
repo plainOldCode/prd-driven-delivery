@@ -8,4 +8,6 @@ test("tasks API returns seeded rows", async ({ request, baseURL }) => {
   expect(Array.isArray(body)).toBeTruthy();
   expect(body.length).toBeGreaterThan(0);
   expect(body[0].title).toBe("Wire backend to frontend");
+  expect(body[0].customerRequest).toBe("Frontend review needs live task data from the backend");
+  expect(body[0].owner).toBe("Sky");
 });

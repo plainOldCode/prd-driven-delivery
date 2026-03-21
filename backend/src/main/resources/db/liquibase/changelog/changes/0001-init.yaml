@@ -2,6 +2,11 @@ databaseChangeLog:
   - changeSet:
       id: 0001-create-sample-task-table
       author: codex
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: sample_task
       changes:
         - createTable:
             tableName: sample_task
@@ -29,6 +34,17 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 0002-seed-sample-task-table
+      author: codex
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: sample_task
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM sample_task
+      changes:
         - insert:
             tableName: sample_task
             columns:
@@ -43,7 +59,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: title
-                  value: Add Playwright smoke test
+                  value: Prepare k3s test namespace
               - column:
                   name: status
                   value: READY

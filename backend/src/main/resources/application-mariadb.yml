@@ -1,9 +1,0 @@
-spring:
-  config:
-    activate:
-      on-profile: mariadb
-  datasource:
-    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:example_app}
-    driver-class-name: org.mariadb.jdbc.Driver
-    username: ${DB_USERNAME:example}
-    password: ${DB_PASSWORD:example}

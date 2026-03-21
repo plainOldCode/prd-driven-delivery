@@ -2,10 +2,10 @@ spring:
   application:
     name: example-backend
   datasource:
-    url: jdbc:h2:mem:example_workspace;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:example_app}
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_USERNAME:example}
+    password: ${DB_PASSWORD:example}
   liquibase:
     change-log: classpath:db/liquibase/changelog/db.changelog-master.yaml
 

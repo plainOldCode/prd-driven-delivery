@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help db-up db-down db-logs backend-run frontend-dev e2e-test helm-template pr-env-create pr-env-delete
+.PHONY: help db-up db-down db-logs backend-run backend-down backend-logs backend-test frontend-dev e2e-test helm-template pr-env-create pr-env-delete
 
 help:
 	@echo ""
@@ -9,7 +9,10 @@ help:
 	@echo "make db-up           Start MariaDB"
 	@echo "make db-down         Stop MariaDB"
 	@echo "make db-logs         Tail MariaDB logs"
-	@echo "make backend-run     Run Spring Boot backend"
+	@echo "make backend-run     Start backend container"
+	@echo "make backend-down    Stop backend container"
+	@echo "make backend-logs    Tail backend logs"
+	@echo "make backend-test    Run backend tests"
 	@echo "make frontend-dev    Run Vue frontend"
 	@echo "make e2e-test        Run Playwright smoke tests"
 	@echo "make helm-template   Render k3s Helm chart"
@@ -26,7 +29,16 @@ db-logs:
 	cd database/dockerized && docker compose logs -f mariadb
 
 backend-run:
-	cd backend && gradle bootRun
+	cd backend && docker compose up --build -d
+
+backend-down:
+	cd backend && docker compose down
+
+backend-logs:
+	cd backend && docker compose logs -f backend
+
+backend-test:
+	docker run --rm -e GRADLE_USER_HOME=/workspace/.gradle -u $$(id -u):$$(id -g) -v $$(pwd)/backend:/workspace -w /workspace gradle:8.7-jdk21 ./gradlew test
 
 frontend-dev:
 	cd frontend && pnpm install && pnpm dev

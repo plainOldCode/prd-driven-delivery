@@ -21,11 +21,10 @@ cd ~/git/side-project/example-workspace
 make db-up
 
 # 2) backend
-cd backend
-gradle bootRun
+make backend-run
 
 # 3) frontend
-cd ../frontend
+cd frontend
 pnpm install
 pnpm dev
 
@@ -53,6 +52,8 @@ pnpm test
 make help
 make db-up
 make backend-run
+make backend-logs
+make backend-test
 make frontend-dev
 make e2e-test
 make helm-template
@@ -61,5 +62,7 @@ make helm-template
 ## Notes
 
 - `backend`, `frontend`, and `e2e-test` are intentionally separated to mirror a real service workspace.
+- The backend now runs against the MariaDB project by default and can be started either with Docker Compose or `./gradlew bootRun`.
+- The backend targets Java 21; the Docker path avoids needing a host Gradle install and the `backend-test` target also runs inside Docker.
 - `infrastructure/k3s` demonstrates how a dedicated test environment can exist separately from local Docker-based development.
 - This skeleton keeps CI, deployment, and secrets handling intentionally minimal because it is designed as a portfolio-ready example.

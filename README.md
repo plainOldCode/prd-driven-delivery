@@ -8,17 +8,34 @@ It is not meant to be a large production clone. It is meant to show a working de
 - refine it into a spec
 - drive implementation across `backend`, `frontend`, and `e2e-test`
 - validate the result locally with Docker and k3d
+- use AI assistance inside that structured workflow instead of treating AI output as the workflow itself
 
 The core claim of this workspace is simple:
 
 > one good product document should be able to drive one complete feature across multiple projects
 
-## What This Repo Proves
+![PRD-driven delivery overview](docs/assets/workspace-delivery-overview.svg)
+
+## What This Demonstrates
 
 - A feature can start in `docs/`, not in source code.
 - Product requirements can be made explicit enough to drive API, UI, and test changes.
 - The same feature can be validated both in local service mode and in a k3s-style environment.
 - A single engineer can keep backend, frontend, QA, and infrastructure aligned through shared documents and conventions.
+- AI-assisted workflows can be useful when they are grounded in explicit PRDs, specs, contracts, and validation steps.
+
+## Why This Matters
+
+Modern teams lose time translating intent into implementation.
+
+This workspace demonstrates a structured way to:
+
+- reduce ambiguity between product and engineering
+- make backend, frontend, and QA changes easier to coordinate
+- keep AI assistance inside a deterministic workflow instead of using it as an unstructured code generator
+- validate the same feature in both local service mode and a k3s-style environment
+
+The goal is not to claim “AI replaces engineering.” The goal is to show how one engineer can use structure, documentation, and automation to increase delivery leverage.
 
 ## Delivery Model
 
@@ -54,6 +71,19 @@ That means:
 3. Use those documents as the handoff for implementation in `backend`, `frontend`, and `e2e-test`.
 
 The product-side contribution in this repo is the document package. The code should follow the documents, not lead them.
+
+## AI-Assisted Workflow
+
+AI is useful in this workspace only when it stays attached to real artifacts.
+
+The intended pattern is:
+
+1. Write the PRD in `docs/prd/`.
+2. Refine it into an execution-facing spec in `docs/spec/`.
+3. Use AI assistance to map the spec into backend, frontend, and e2e work.
+4. Validate the result with tests, Docker, and k3d.
+
+The supporting note for that workflow lives in [`docs/ai-workflow.md`](/Users/skshim/git/side-project/example-workspace/docs/ai-workflow.md).
 
 ## How To Make A Feature
 

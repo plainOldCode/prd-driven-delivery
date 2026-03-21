@@ -4,6 +4,7 @@ This directory is the starting point for feature work in this workspace.
 
 - `prd/`: product requirements and problem framing
 - `spec/`: execution-facing specs, API contracts, validation rules, and acceptance criteria
+- `ai-workflow.md`: how AI assistance is intended to fit into the delivery model
 
 Expected workflow:
 

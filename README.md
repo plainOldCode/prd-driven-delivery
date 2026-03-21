@@ -24,6 +24,17 @@ The core claim of this workspace is simple:
 - A single engineer can keep backend, frontend, QA, and infrastructure aligned through shared documents and conventions.
 - AI-assisted workflows can be useful when they are grounded in explicit PRDs, specs, contracts, and validation steps.
 
+## Demo
+
+This repo runs as a working stack, not just as documentation.
+
+- Backend API serves live health and task data from the Spring Boot service.
+- Frontend consumes `/api/health` and `/api/tasks` through the Vue API layer.
+- Playwright smoke tests cover both API and UI paths.
+- The same stack is validated in a local `k3d` cluster through the Helm chart.
+
+![Frontend demo against the live backend](docs/assets/frontend-demo.png)
+
 ## Why This Matters
 
 Modern teams lose time translating intent into implementation.
@@ -72,18 +83,19 @@ That means:
 
 The product-side contribution in this repo is the document package. The code should follow the documents, not lead them.
 
-## AI-Assisted Workflow
+## Role of AI in This Workflow
 
-AI is useful in this workspace only when it stays attached to real artifacts.
+AI is not used here as a replacement for product thinking, engineering judgment, or QA.
 
-The intended pattern is:
+Instead, it is used to:
 
-1. Write the PRD in `docs/prd/`.
-2. Refine it into an execution-facing spec in `docs/spec/`.
-3. Use AI assistance to map the spec into backend, frontend, and e2e work.
-4. Validate the result with tests, Docker, and k3d.
+- accelerate translation from PRD to spec to implementation tasks
+- help keep backend, frontend, and e2e work aligned
+- reduce repetitive drafting around contracts, acceptance criteria, and scaffolding
 
-The supporting note for that workflow lives in [`docs/ai-workflow.md`](/Users/skshim/git/side-project/example-workspace/docs/ai-workflow.md).
+The constraint is deliberate: AI operates inside documents, tests, and environment checks. The source of truth stays in the PRD, spec, code review, and verification steps.
+
+The supporting note for that workflow lives in [`docs/ai-workflow.md`](docs/ai-workflow.md).
 
 ## How To Make A Feature
 
@@ -97,8 +109,8 @@ The supporting note for that workflow lives in [`docs/ai-workflow.md`](/Users/sk
 
 Current documentation examples:
 
-- PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](/Users/skshim/git/side-project/example-workspace/docs/prd/task-lifecycle-and-status-rules.md)
-- Spec: [`docs/spec/task-lifecycle-and-status-rules.md`](/Users/skshim/git/side-project/example-workspace/docs/spec/task-lifecycle-and-status-rules.md)
+- PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](docs/prd/task-lifecycle-and-status-rules.md)
+- Spec: [`docs/spec/task-lifecycle-and-status-rules.md`](docs/spec/task-lifecycle-and-status-rules.md)
 
 ## Workspace Shape
 
@@ -115,7 +127,8 @@ Current documentation examples:
 ## Quick Start
 
 ```bash
-cd ~/git/side-project/example-workspace
+git clone https://github.com/plainOldCode/prd-driven-delivery.git
+cd prd-driven-delivery
 
 # 1) database
 make db-up
@@ -150,7 +163,7 @@ make helm-smoke-local
 
 # open the cluster entrypoint
 open http://127.0.0.1:8088
-curl -H "Host: example-workspace.local" http://127.0.0.1:8088/api/health
+curl -H "Host: prd-driven-delivery.local" http://127.0.0.1:8088/api/health
 ```
 
 ## Workspace Commands

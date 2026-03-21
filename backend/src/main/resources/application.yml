@@ -1,6 +1,6 @@
 spring:
   application:
-    name: example-backend
+    name: prd-delivery-backend
   datasource:
     url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:example_app}
     driver-class-name: org.mariadb.jdbc.Driver
@@ -22,4 +22,4 @@ management:
       show-details: always
 
 workspace:
-  name: example-workspace
+  name: prd-driven-delivery

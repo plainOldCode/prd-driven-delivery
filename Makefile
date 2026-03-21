@@ -4,16 +4,16 @@ K3D_CLUSTER ?= example-local
 K3D_HOST_PORT ?= 8088
 HELM_RELEASE ?= example-dev
 HELM_NAMESPACE ?= $(HELM_RELEASE)
-BACKEND_IMAGE ?= example-backend:local
-FRONTEND_IMAGE ?= example-frontend:local
-INGRESS_HOST ?= example-workspace.local
+BACKEND_IMAGE ?= prd-delivery-backend:local
+FRONTEND_IMAGE ?= prd-delivery-frontend:local
+INGRESS_HOST ?= prd-driven-delivery.local
 
 .PHONY: help db-up db-down db-logs backend-run backend-down backend-logs backend-test frontend-dev e2e-test k3d-up k3d-down k3d-status helm-template helm-deploy-local helm-delete-local helm-smoke-local pr-env-create pr-env-delete
 
 help:
 	@echo ""
-	@echo "Example Workspace"
-	@echo "================="
+	@echo "PRD-Driven Delivery"
+	@echo "==================="
 	@echo "make db-up           Start MariaDB"
 	@echo "make db-down         Stop MariaDB"
 	@echo "make db-logs         Tail MariaDB logs"
@@ -91,9 +91,9 @@ helm-delete-local:
 
 helm-smoke-local:
 	@bash infrastructure/k3s/scripts/pr-env-test.sh "$(HELM_NAMESPACE)" "$(HELM_RELEASE)"
-	@curl -s -H "Host: $(INGRESS_HOST)" "http://127.0.0.1:$(K3D_HOST_PORT)/api/health"
+	@curl --retry 20 --retry-delay 1 --retry-all-errors -sf -H "Host: $(INGRESS_HOST)" "http://127.0.0.1:$(K3D_HOST_PORT)/api/health"
 	@printf '\n'
-	@curl -s -H "Host: $(INGRESS_HOST)" "http://127.0.0.1:$(K3D_HOST_PORT)/api/tasks"
+	@curl --retry 20 --retry-delay 1 --retry-all-errors -sf -H "Host: $(INGRESS_HOST)" "http://127.0.0.1:$(K3D_HOST_PORT)/api/tasks"
 	@printf '\n'
 
 pr-env-create:

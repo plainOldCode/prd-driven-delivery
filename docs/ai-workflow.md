@@ -1,4 +1,4 @@
-# AI-Assisted Workflow
+# Role of AI in This Workflow
 
 This workspace is not trying to prove that AI can replace product, engineering, or QA.
 
@@ -21,6 +21,7 @@ The expected order is:
 - turning a PRD into a tighter implementation-facing spec
 - identifying backend/frontend/e2e touchpoints from the spec
 - drafting acceptance criteria and validation cases
+- accelerating repetitive implementation scaffolding
 - keeping multi-project changes aligned
 
 ## Where AI Should Not Lead

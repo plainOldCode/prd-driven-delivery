@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("workspace cards render on the home page", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "A minimal foundation for a multi-project development workspace" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "One product document can drive one complete feature" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Live tasks from MariaDB" })).toBeVisible();
   await expect(page.getByText("Wire backend to frontend")).toBeVisible();
   await expect(page.getByText("Prepare k3s test namespace")).toBeVisible();

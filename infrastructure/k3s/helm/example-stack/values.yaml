@@ -21,7 +21,7 @@ nginx:
 ingress:
   enabled: true
   className: traefik
-  host: example-workspace.local
+  host: prd-driven-delivery.local
   pathType: Prefix
 
 resources:

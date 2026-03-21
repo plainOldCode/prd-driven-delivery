@@ -5,7 +5,7 @@ test("health API returns UP status", async ({ request, baseURL }) => {
   const body = await response.json();
 
   expect(response.ok()).toBeTruthy();
-  expect(body.service).toBe("example-backend");
-  expect(body.workspace).toBe("example-workspace");
+  expect(body.service).toBe("prd-delivery-backend");
+  expect(body.workspace).toBe("prd-driven-delivery");
   expect(body.status).toBe("UP");
 });

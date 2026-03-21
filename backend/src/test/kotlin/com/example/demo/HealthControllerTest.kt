@@ -16,8 +16,8 @@ class HealthControllerTest(
         mockMvc.get("/api/health")
             .andExpect {
                 status { isOk() }
-                jsonPath("$.service") { value("example-backend") }
-                jsonPath("$.workspace") { value("example-workspace") }
+                jsonPath("$.service") { value("prd-delivery-backend") }
+                jsonPath("$.workspace") { value("prd-driven-delivery") }
                 jsonPath("$.status") { value("UP") }
             }
     }

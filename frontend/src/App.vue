@@ -68,11 +68,12 @@ onMounted(async () => {
 <template>
   <main class="page">
     <section class="hero">
-      <p class="eyebrow">Example Workspace</p>
-      <h1>A minimal foundation for a multi-project development workspace</h1>
+      <p class="eyebrow">PRD-Driven Delivery</p>
+      <h1>One product document can drive one complete feature</h1>
       <p class="summary">
-        This project separates backend, frontend, database, e2e-test, and infrastructure just like a real
-        production workspace, while keeping the starting point lean enough for a side project or portfolio piece.
+        This workspace demonstrates a docs-first delivery model across backend, frontend, database, e2e-test,
+        and k3d validation. The goal is to keep product intent, implementation, and verification aligned across
+        projects.
       </p>
 
       <div class="health-panel">

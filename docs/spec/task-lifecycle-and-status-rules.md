@@ -1,6 +1,6 @@
 # Task Lifecycle And Status Rules Spec
 
-Source PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](/Users/skshim/git/side-project/example-workspace/docs/prd/task-lifecycle-and-status-rules.md)
+Source PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](../prd/task-lifecycle-and-status-rules.md)
 
 ## Scope Summary
 

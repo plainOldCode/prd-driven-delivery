@@ -127,10 +127,10 @@ The supporting note for that workflow lives in [`docs/ai-workflow.md`](docs/ai-w
    `backend`, `frontend`, `e2e-test`, and `infrastructure` if deployment or ingress behavior changes.
 6. Use the PRD and spec together as the feature handoff.
 
-Current documentation examples for the planned next feature:
+Current documentation examples:
 
-- PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](docs/prd/task-lifecycle-and-status-rules.md)
-- Spec: [`docs/spec/task-lifecycle-and-status-rules.md`](docs/spec/task-lifecycle-and-status-rules.md)
+- Planned implementation slice: [`docs/prd/task-lifecycle-and-status-rules.md`](docs/prd/task-lifecycle-and-status-rules.md) and [`docs/spec/task-lifecycle-and-status-rules.md`](docs/spec/task-lifecycle-and-status-rules.md)
+- PRD-stage business planning slice: [`docs/prd/business-task-intake-and-planning.md`](docs/prd/business-task-intake-and-planning.md)
 
 ## Workspace Shape
 

@@ -41,3 +41,61 @@ jobs:
       - uses: azure/setup-helm@v4
       - name: Render Helm chart
         run: helm template example-stack infrastructure/k3s/helm/example-stack
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: Install e2e dependencies and Playwright browser
+        working-directory: e2e-test
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install --with-deps chromium
+      - name: Start database
+        run: docker compose -f database/dockerized/docker-compose.yml up -d
+      - name: Wait for database
+        run: |
+          timeout 180 bash -c 'until docker exec example-workspace-db mariadb-admin ping -h 127.0.0.1 -uroot -proot --silent; do sleep 2; done'
+      - name: Start backend
+        run: |
+          cd backend
+          nohup ./gradlew bootRun --no-daemon > ../backend.log 2>&1 &
+          echo $! > ../backend.pid
+      - name: Wait for backend health
+        run: |
+          timeout 180 bash -c 'until curl -sf http://127.0.0.1:8080/api/health >/dev/null; do sleep 2; done'
+      - name: Start frontend
+        run: |
+          cd frontend
+          nohup pnpm exec vite --host 127.0.0.1 --port 5173 > ../frontend.log 2>&1 &
+          echo $! > ../frontend.pid
+      - name: Wait for frontend
+        run: |
+          timeout 180 bash -c 'until curl -sf http://127.0.0.1:5173 >/dev/null; do sleep 2; done'
+      - name: Run Playwright smoke
+        working-directory: e2e-test
+        run: pnpm test
+      - name: Dump service logs on failure
+        if: failure()
+        run: |
+          test -f backend.log && tail -n 200 backend.log || true
+          test -f frontend.log && tail -n 200 frontend.log || true
+          docker compose -f database/dockerized/docker-compose.yml logs --tail=200 || true
+      - name: Stop local services
+        if: always()
+        run: |
+          test -f frontend.pid && kill "$(cat frontend.pid)" || true
+          test -f backend.pid && kill "$(cat backend.pid)" || true
+          docker compose -f database/dockerized/docker-compose.yml down -v || true

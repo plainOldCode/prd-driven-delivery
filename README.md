@@ -35,6 +35,26 @@ This repo runs as a working stack, not just as documentation.
 
 ![Frontend demo against the live backend](docs/assets/frontend-demo.png)
 
+## Currently Implemented
+
+The current codebase proves the delivery path with a small working slice:
+
+- `GET /api/health`
+- `GET /api/tasks`
+- Vue rendering of live backend health and seeded MariaDB task rows
+- Playwright smoke coverage for API health, API task reads, and the home page
+- Local Docker and `k3d` validation through the Helm chart
+
+## Documented Next Feature
+
+The task lifecycle package under `docs/` is intentionally the next planned implementation step, not a claim that it already exists in code.
+
+- task creation via `POST /api/tasks`
+- constrained status transitions via `PATCH /api/tasks/{id}`
+- `blockedReason` validation and UI treatment
+- richer task lifecycle e2e scenarios
+- Liquibase schema expansion for `blocked_reason` and `updated_at`
+
 ## Why This Matters
 
 Modern teams lose time translating intent into implementation.
@@ -107,7 +127,7 @@ The supporting note for that workflow lives in [`docs/ai-workflow.md`](docs/ai-w
    `backend`, `frontend`, `e2e-test`, and `infrastructure` if deployment or ingress behavior changes.
 6. Use the PRD and spec together as the feature handoff.
 
-Current documentation examples:
+Current documentation examples for the planned next feature:
 
 - PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](docs/prd/task-lifecycle-and-status-rules.md)
 - Spec: [`docs/spec/task-lifecycle-and-status-rules.md`](docs/spec/task-lifecycle-and-status-rules.md)
@@ -200,5 +220,3 @@ It exists to show how a feature can move through:
 - local environment verification
 
 without losing the thread between those layers.
-
-Written by `codex-5.4 xhigh fast`.

@@ -1,5 +1,7 @@
 # Task Lifecycle And Status Rules Spec
 
+Status: Planned next feature. This document describes the next implementation slice; the current codebase still only exposes health and read-only task list behavior.
+
 Source PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](../prd/task-lifecycle-and-status-rules.md)
 
 ## Scope Summary

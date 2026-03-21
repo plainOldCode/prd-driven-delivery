@@ -1,42 +1,86 @@
-# Example Workspace
+# PRD-Driven Delivery Workspace
 
-This is a simplified multi-project workspace inspired by the structure of `upbox-workspace`.
+This repo demonstrates how I structure docs-first delivery from product requirements to backend, frontend, QA, and local infrastructure validation.
 
-- `backend/`: Kotlin + Spring Boot API
-- `frontend/`: Vue 3 + Vite web app
-- `database/`: Local MariaDB setup and bootstrap schema
-- `e2e-test/`: Playwright smoke tests
-- `infrastructure/`: k3s test environment Helm chart, Dockerfiles, and ops scripts
-- `docs/`: PRD and working documentation
+It is not meant to be a large production clone. It is meant to show a working delivery model:
 
-This example is a skeleton meant to demonstrate how multiple repositories can be managed within a single workspace.
-In a real project, each directory can be split into an independent Git repository or submodule.
+- start with a PRD
+- refine it into a spec
+- drive implementation across `backend`, `frontend`, and `e2e-test`
+- validate the result locally with Docker and k3d
 
-## Objective
+The core claim of this workspace is simple:
 
-The main objective of this workspace is docs-first product development.
+> one good product document should be able to drive one complete feature across multiple projects
 
-The idea is simple:
+## What This Repo Proves
 
-- write a Product Requirements Document in `docs/prd/`
-- use that PRD as the source of truth for the feature
-- generate or implement the related changes in `backend`, `frontend`, and `e2e-test`
+- A feature can start in `docs/`, not in source code.
+- Product requirements can be made explicit enough to drive API, UI, and test changes.
+- The same feature can be validated both in local service mode and in a k3s-style environment.
+- A single engineer can keep backend, frontend, QA, and infrastructure aligned through shared documents and conventions.
 
-This means the starting point for a new feature is not code. The starting point is a clear product document that explains what should happen, what is out of scope, and how the result should be validated.
+## Delivery Model
 
-If you are acting as the product side of the workflow, your job is to write the PRD. You do not begin by editing application code. You describe the feature well enough that the implementation and tests can be created from the document.
+```mermaid
+flowchart LR
+  PRD["docs/prd/<feature>.md"]
+  SPEC["docs/spec/<feature>.md"]
+  BE["backend/"]
+  FE["frontend/"]
+  QA["e2e-test/"]
+  INFRA["infrastructure/k3s/"]
+  VERIFY["Local validation<br/>Docker Compose + k3d"]
+
+  PRD --> SPEC
+  SPEC --> BE
+  SPEC --> FE
+  SPEC --> QA
+  SPEC --> INFRA
+  BE --> VERIFY
+  FE --> VERIFY
+  QA --> VERIFY
+  INFRA --> VERIFY
+```
+
+## Docs-First Rule
+
+If you are using this workspace in an LLM-assisted or product-driven workflow, the first job is to write documents, not code.
+
+That means:
+
+1. Create a PRD in `docs/prd/`.
+2. Turn it into an execution-facing spec in `docs/spec/`.
+3. Use those documents as the handoff for implementation in `backend`, `frontend`, and `e2e-test`.
+
+The product-side contribution in this repo is the document package. The code should follow the documents, not lead them.
 
 ## How To Make A Feature
 
-1. Create a new PRD file under `docs/prd/`, for example `docs/prd/user-profile.md`.
-2. Describe the feature in product terms first: background, user problem, goals, and non-goals.
-3. Define the expected backend behavior: endpoints, request and response shape, validation rules, and database impact if needed.
-4. Define the expected frontend behavior: screens, states, empty/error/loading cases, and the API data it needs.
-5. Define the expected `e2e-test` coverage: the main user flow, important API checks, and acceptance criteria.
-6. Mark anything intentionally out of scope so the implementation stays focused.
-7. Use the PRD as the handoff document for building the feature across `backend`, `frontend`, and `e2e-test`.
+1. Create a new PRD file under `docs/prd/`.
+2. Describe the user problem, goals, non-goals, and product rules.
+3. Add or update a spec file under `docs/spec/`.
+4. In the spec, define the backend contract, validation rules, UI states, and acceptance criteria.
+5. Call out the exact project touchpoints:
+   `backend`, `frontend`, `e2e-test`, and `infrastructure` if deployment or ingress behavior changes.
+6. Use the PRD and spec together as the feature handoff.
 
-In short: this workspace exists so that one good PRD in `docs/` can drive one complete feature across multiple projects.
+Current documentation examples:
+
+- PRD: [`docs/prd/task-lifecycle-and-status-rules.md`](/Users/skshim/git/side-project/example-workspace/docs/prd/task-lifecycle-and-status-rules.md)
+- Spec: [`docs/spec/task-lifecycle-and-status-rules.md`](/Users/skshim/git/side-project/example-workspace/docs/spec/task-lifecycle-and-status-rules.md)
+
+## Workspace Shape
+
+| Path | Role |
+|------|------|
+| `docs/prd/` | Product requirements |
+| `docs/spec/` | Execution-facing feature specs |
+| `backend/` | Kotlin + Spring Boot API |
+| `frontend/` | Vue 3 + Vite web app |
+| `database/` | Local MariaDB runtime and bootstrap SQL |
+| `e2e-test/` | Playwright smoke and UI verification |
+| `infrastructure/` | k3s/k3d-oriented Dockerfiles, Helm templates, and scripts |
 
 ## Quick Start
 
@@ -60,17 +104,24 @@ corepack pnpm install
 corepack pnpm test
 ```
 
-## Directory Map
+## Local Validation
 
-| Path | Purpose |
-|------|---------|
-| `docs/prd/` | Requirement documents |
-| `backend/src/main/` | API server |
-| `frontend/src/` | User-facing web app |
-| `database/dockerized/` | Local database runtime |
-| `e2e-test/tests/` | UI and API smoke tests |
-| `infrastructure/k3s/helm/example-stack/` | Helm chart for test environments |
-| `infrastructure/k3s/scripts/` | PR environment create/delete scripts |
+This workspace has been validated on Apple Silicon with Docker Desktop by running k3s through `k3d`.
+
+```bash
+# create or switch the local cluster
+make k3d-up
+
+# build local images and deploy the Helm release
+make helm-deploy-local
+
+# verify backend, frontend, nginx, and database together
+make helm-smoke-local
+
+# open the cluster entrypoint
+open http://127.0.0.1:8088
+curl -H "Host: example-workspace.local" http://127.0.0.1:8088/api/health
+```
 
 ## Workspace Commands
 
@@ -88,29 +139,21 @@ make helm-deploy-local
 make helm-smoke-local
 ```
 
-## Local k3d Validation
+## Why This Exists
 
-This workspace has been validated on an Apple Silicon Mac with Docker Desktop by running k3s through `k3d`.
+Many repos show either:
 
-```bash
-# 1) create/switch the local cluster
-make k3d-up
+- a product document with no credible execution path, or
+- application code with no clear product reasoning behind it
 
-# 2) build/import local images and deploy the Helm release
-make helm-deploy-local
+This workspace is for the space in between.
 
-# 3) check rollout status and probe ingress
-make helm-smoke-local
+It exists to show how a feature can move through:
 
-# frontend + API through the k3d load balancer
-open http://127.0.0.1:8088
-curl -H "Host: example-workspace.local" http://127.0.0.1:8088/api/health
-```
+- product intent
+- implementation detail
+- API and UI impact
+- QA coverage
+- local environment verification
 
-## Notes
-
-- `backend`, `frontend`, and `e2e-test` are intentionally separated to mirror a real service workspace.
-- The backend now runs against the MariaDB project by default and can be started either with Docker Compose or `./gradlew bootRun`.
-- The backend targets Java 21; the Docker path avoids needing a host Gradle install and the `backend-test` target also runs inside Docker.
-- `infrastructure/k3s` demonstrates how a dedicated test environment can exist separately from local Docker-based development, and the local `k3d` path has been verified end-to-end.
-- This skeleton keeps CI, deployment, and secrets handling intentionally minimal because it is designed as a portfolio-ready example.
+without losing the thread between those layers.

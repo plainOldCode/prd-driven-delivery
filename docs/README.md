@@ -1,6 +1,12 @@
 # Docs
 
-This directory stores PRDs, design notes, and operational documents for the example workspace.
+This directory is the starting point for feature work in this workspace.
 
-- `prd/`: feature requirements
-- Add `spec/`, `adr/`, or `runbook/` later as the project grows
+- `prd/`: product requirements and problem framing
+- `spec/`: execution-facing specs, API contracts, validation rules, and acceptance criteria
+
+Expected workflow:
+
+1. Write the product requirement in `prd/`.
+2. Refine it into an implementation-facing spec in `spec/`.
+3. Use those documents to drive `backend`, `frontend`, `e2e-test`, and `infrastructure` changes.

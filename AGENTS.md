@@ -6,7 +6,7 @@ This workspace is a simplified example for a multi-project development setup.
 
 | Directory | Role |
 |-----------|------|
-| `docs/` | PRD and working notes |
+| `docs/` | PRD and spec documents |
 | `backend/` | Kotlin Spring Boot API |
 | `frontend/` | Vue 3 web app |
 | `database/` | MariaDB and bootstrap SQL |
@@ -17,9 +17,10 @@ This workspace is a simplified example for a multi-project development setup.
 
 1. Inspect the root structure first, then move into the target directory.
 2. Treat `backend`, `frontend`, `database`, and `e2e-test` as independent projects.
-3. When the API changes, also review `frontend/src/api/` and `e2e-test/tests/`.
-4. When the test environment changes, update `infrastructure/k3s/helm/example-stack` and `infrastructure/k3s/scripts` together.
-5. On macOS with Docker Desktop, prefer validating the k3s flow through `k3d` unless the user explicitly wants Docker Desktop Kubernetes.
+3. Feature work should start in `docs/prd/` and `docs/spec/` before code changes.
+4. When the API changes, also review `frontend/src/api/` and `e2e-test/tests/`.
+5. When the test environment changes, update `infrastructure/k3s/helm/example-stack` and `infrastructure/k3s/scripts` together.
+6. On macOS with Docker Desktop, prefer validating the k3s flow through `k3d` unless the user explicitly wants Docker Desktop Kubernetes.
 
 ## Common Commands
 
@@ -37,4 +38,4 @@ make helm-template
 
 ## Goal
 
-Keep the skeleton minimal and readable instead of copying a full production workspace, while preserving visible dependencies and operational touchpoints.
+Keep the workspace minimal and readable while making the PRD -> SPEC -> CODE -> QA flow visible enough to evaluate.

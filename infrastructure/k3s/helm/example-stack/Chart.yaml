@@ -1,0 +1,6 @@
+apiVersion: v2
+name: example-stack
+description: Simplified backend/frontend/database/nginx stack for k3s test environments
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

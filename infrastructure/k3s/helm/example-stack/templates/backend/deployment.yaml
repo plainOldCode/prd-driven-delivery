@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "example-stack.fullname" . }}-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "example-stack.fullname" . }}-backend
+  template:
+    metadata:
+      labels:
+        app: {{ include "example-stack.fullname" . }}-backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: mariadb
+            - name: DB_HOST
+              value: {{ include "example-stack.fullname" . }}-database
+            - name: DB_PORT
+              value: "{{ .Values.database.port }}"
+            - name: DB_NAME
+              value: {{ .Values.database.name }}
+            - name: DB_USERNAME
+              value: {{ .Values.database.username }}
+            - name: DB_PASSWORD
+              value: {{ .Values.database.password }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

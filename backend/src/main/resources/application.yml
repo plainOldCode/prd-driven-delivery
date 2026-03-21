@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: example-backend
+  datasource:
+    url: jdbc:h2:mem:example_workspace;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  liquibase:
+    change-log: classpath:db/liquibase/changelog/db.changelog-master.yaml
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+workspace:
+  name: example-workspace

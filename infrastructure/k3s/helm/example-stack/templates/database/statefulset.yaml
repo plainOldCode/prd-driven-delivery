@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "example-stack.fullname" . }}-database
+spec:
+  serviceName: {{ include "example-stack.fullname" . }}-database
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "example-stack.fullname" . }}-database
+  template:
+    metadata:
+      labels:
+        app: {{ include "example-stack.fullname" . }}-database
+    spec:
+      containers:
+        - name: mariadb
+          image: {{ .Values.database.image }}
+          ports:
+            - containerPort: {{ .Values.database.port }}
+          env:
+            - name: MARIADB_DATABASE
+              value: {{ .Values.database.name }}
+            - name: MARIADB_USER
+              value: {{ .Values.database.username }}
+            - name: MARIADB_PASSWORD
+              value: {{ .Values.database.password }}
+            - name: MARIADB_ROOT_PASSWORD
+              value: {{ .Values.database.rootPassword }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

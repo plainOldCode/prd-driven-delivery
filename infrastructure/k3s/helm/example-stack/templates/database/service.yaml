@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "example-stack.fullname" . }}-database
+spec:
+  selector:
+    app: {{ include "example-stack.fullname" . }}-database
+  ports:
+    - port: {{ .Values.database.port }}
+      targetPort: {{ .Values.database.port }}

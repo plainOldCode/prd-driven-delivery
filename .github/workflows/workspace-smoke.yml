@@ -1,0 +1,21 @@
+name: workspace-smoke
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  structure-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify expected files exist
+        run: |
+          test -f README.md
+          test -f Makefile
+          test -f backend/build.gradle.kts
+          test -f frontend/package.json
+          test -f database/dockerized/docker-compose.yml
+          test -f e2e-test/playwright.config.ts
+          test -f infrastructure/k3s/helm/example-stack/Chart.yaml

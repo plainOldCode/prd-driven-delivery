@@ -1,0 +1,19 @@
+{
+  "name": "example-e2e-test",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "setup": "./scripts/setup.sh",
+    "test": "playwright test",
+    "test:ui": "playwright test --project=ui-smoke",
+    "test:api": "playwright test --project=api-smoke",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^22.18.13",
+    "dotenv": "^16.6.1",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@10.15.0"
+}

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "example-stack.fullname" . }}-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "example-stack.fullname" . }}-nginx
+  template:
+    metadata:
+      labels:
+        app: {{ include "example-stack.fullname" . }}-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: {{ .Values.nginx.image }}
+          ports:
+            - containerPort: {{ .Values.nginx.port }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "example-stack.fullname" . }}-nginx-config

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "example-stack.fullname" . }}-frontend
+spec:
+  selector:
+    app: {{ include "example-stack.fullname" . }}-frontend
+  ports:
+    - port: {{ .Values.frontend.port }}
+      targetPort: {{ .Values.frontend.port }}

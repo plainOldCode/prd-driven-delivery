@@ -1,0 +1,3 @@
+databaseChangeLog:
+  - include:
+      file: db/liquibase/changelog/changes/0001-init.yaml

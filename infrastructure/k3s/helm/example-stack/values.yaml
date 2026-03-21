@@ -1,0 +1,33 @@
+backend:
+  image: ghcr.io/example/example-backend:latest
+  port: 8080
+
+frontend:
+  image: ghcr.io/example/example-frontend:latest
+  port: 80
+
+database:
+  image: mariadb:11.4
+  port: 3306
+  name: example_app
+  username: example
+  password: example
+  rootPassword: root
+
+nginx:
+  image: nginx:1.27-alpine
+  port: 80
+
+ingress:
+  enabled: true
+  className: traefik
+  host: example-workspace.local
+  pathType: Prefix
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

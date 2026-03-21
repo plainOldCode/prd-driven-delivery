@@ -4,9 +4,12 @@ test("workspace cards render on the home page", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "A minimal foundation for a multi-project development workspace" })).toBeVisible();
-  await expect(page.getByText("backend")).toBeVisible();
-  await expect(page.getByText("frontend")).toBeVisible();
-  await expect(page.getByText("database")).toBeVisible();
-  await expect(page.getByText("e2e-test")).toBeVisible();
-  await expect(page.getByText("infrastructure")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Live tasks from MariaDB" })).toBeVisible();
+  await expect(page.getByText("Wire backend to frontend")).toBeVisible();
+  await expect(page.getByText("Prepare k3s test namespace")).toBeVisible();
+  await expect(page.getByText("backend", { exact: true })).toBeVisible();
+  await expect(page.getByText("frontend", { exact: true })).toBeVisible();
+  await expect(page.getByText("database", { exact: true })).toBeVisible();
+  await expect(page.getByText("e2e-test", { exact: true })).toBeVisible();
+  await expect(page.getByText("infrastructure", { exact: true })).toBeVisible();
 });

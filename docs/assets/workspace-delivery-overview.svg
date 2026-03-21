@@ -1,93 +1,81 @@
-<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1800" height="980" viewBox="0 0 1800 980" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="120" y1="80" x2="1480" y2="820" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFF3D8"/>
-      <stop offset="0.5" stop-color="#F3F8FF"/>
-      <stop offset="1" stop-color="#EEF7F1"/>
+    <linearGradient id="bg" x1="120" y1="80" x2="1680" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4DB"/>
+      <stop offset="0.48" stop-color="#F3F8FF"/>
+      <stop offset="1" stop-color="#EEF7F2"/>
     </linearGradient>
-    <linearGradient id="docsCard" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#FFF8E8"/>
+    <linearGradient id="docsCard" x1="80" y1="290" x2="560" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9EC"/>
       <stop offset="1" stop-color="#FFFFFF"/>
     </linearGradient>
-    <linearGradient id="codeCard" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="execCard" x1="660" y1="290" x2="1140" y2="650" gradientUnits="userSpaceOnUse">
       <stop stop-color="#EEF5FF"/>
       <stop offset="1" stop-color="#FFFFFF"/>
     </linearGradient>
-    <linearGradient id="verifyCard" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="verifyCard" x1="1240" y1="290" x2="1720" y2="650" gradientUnits="userSpaceOnUse">
       <stop stop-color="#EEF8F1"/>
       <stop offset="1" stop-color="#FFFFFF"/>
     </linearGradient>
-    <filter id="shadow" x="-40" y="-40" width="220" height="220" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#243248" flood-opacity="0.12"/>
-    </filter>
-    <filter id="cardShadow" x="-20" y="-20" width="560" height="360" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#243248" flood-opacity="0.10"/>
-    </filter>
-    <marker id="arrow" markerWidth="16" markerHeight="16" refX="12" refY="8" orient="auto">
-      <path d="M1 1L12 8L1 15" stroke="#314761" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <marker id="arrow" markerWidth="18" markerHeight="18" refX="13" refY="9" orient="auto">
+      <path d="M2 2L13 9L2 16" stroke="#314761" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="1600" height="900" rx="32" fill="url(#bg)"/>
-  <circle cx="142" cy="128" r="72" fill="#FFD18F" fill-opacity="0.35"/>
-  <circle cx="1450" cy="160" r="92" fill="#A8C9FF" fill-opacity="0.28"/>
-  <circle cx="1368" cy="770" r="110" fill="#AEE1BE" fill-opacity="0.24"/>
+  <rect width="1800" height="980" rx="36" fill="url(#bg)"/>
+  <circle cx="180" cy="140" r="84" fill="#FFD7A1" fill-opacity="0.42"/>
+  <circle cx="1610" cy="152" r="110" fill="#B7D0FF" fill-opacity="0.28"/>
+  <circle cx="1490" cy="825" r="128" fill="#B6E4C1" fill-opacity="0.24"/>
 
-  <text x="110" y="118" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="28" font-weight="700" letter-spacing="2">PRD-DRIVEN DELIVERY WORKSPACE</text>
-  <text x="110" y="172" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="64" font-weight="800">From product intent to verified delivery</text>
-  <text x="110" y="224" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="26">A docs-first, AI-assisted workflow across backend, frontend, QA, and local k3d validation.</text>
+  <text x="92" y="112" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="28" font-weight="700" letter-spacing="2">PRD-DRIVEN DELIVERY WORKSPACE</text>
+  <text x="92" y="174" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="68" font-weight="800">From product intent to verified delivery</text>
+  <text x="92" y="226" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="27">A docs-first, AI-assisted workflow across backend, frontend, QA, and local k3d validation.</text>
 
-  <g filter="url(#cardShadow)">
-    <rect x="110" y="300" width="360" height="300" rx="32" fill="url(#docsCard)"/>
-  </g>
-  <text x="148" y="356" fill="#915000" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700" letter-spacing="2">1. PRODUCT INTENT</text>
-  <text x="148" y="412" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="42" font-weight="800">PRD + SPEC</text>
-  <text x="148" y="458" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="22">Write product rules first.</text>
-  <text x="148" y="494" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="22">Turn them into contracts, states,</text>
-  <text x="148" y="530" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="22">validation rules, and acceptance criteria.</text>
-  <rect x="148" y="560" width="130" height="40" rx="20" fill="#FFF0C6"/>
-  <text x="174" y="586" fill="#7A4A00" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">docs/prd</text>
-  <rect x="294" y="560" width="142" height="40" rx="20" fill="#FFF0C6"/>
-  <text x="322" y="586" fill="#7A4A00" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">docs/spec</text>
+  <rect x="80" y="300" width="480" height="340" rx="34" fill="url(#docsCard)" stroke="#E6D6B2" stroke-width="2"/>
+  <rect x="660" y="300" width="480" height="340" rx="34" fill="url(#execCard)" stroke="#C8DBF6" stroke-width="2"/>
+  <rect x="1240" y="300" width="480" height="340" rx="34" fill="url(#verifyCard)" stroke="#CBE3D3" stroke-width="2"/>
 
-  <g filter="url(#cardShadow)">
-    <rect x="520" y="300" width="560" height="300" rx="32" fill="url(#codeCard)"/>
-  </g>
-  <text x="560" y="356" fill="#18539A" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700" letter-spacing="2">2. EXECUTION</text>
-  <text x="560" y="412" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="42" font-weight="800">Backend + Frontend + E2E</text>
-  <text x="560" y="458" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="22">Use the same feature documents to drive API changes, UI states, and QA coverage.</text>
+  <text x="120" y="360" fill="#8F5200" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700" letter-spacing="2">1. PRODUCT INTENT</text>
+  <text x="120" y="422" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="44" font-weight="800">PRD + SPEC</text>
+  <text x="120" y="474" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">Write product rules first.</text>
+  <text x="120" y="510" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">Turn them into contracts, validation rules,</text>
+  <text x="120" y="546" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">UI states, and acceptance criteria.</text>
+  <rect x="120" y="578" width="144" height="44" rx="22" fill="#FFF0CB"/>
+  <text x="154" y="607" fill="#7B4B00" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">docs/prd</text>
+  <rect x="278" y="578" width="154" height="44" rx="22" fill="#FFF0CB"/>
+  <text x="313" y="607" fill="#7B4B00" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">docs/spec</text>
 
-  <rect x="560" y="504" width="148" height="56" rx="24" fill="#E5F0FF"/>
-  <text x="592" y="539" fill="#1A4F93" font-family="Pretendard, Segoe UI, sans-serif" font-size="24" font-weight="700">backend</text>
-  <rect x="726" y="504" width="154" height="56" rx="24" fill="#E5F0FF"/>
-  <text x="760" y="539" fill="#1A4F93" font-family="Pretendard, Segoe UI, sans-serif" font-size="24" font-weight="700">frontend</text>
-  <rect x="898" y="504" width="136" height="56" rx="24" fill="#E5F0FF"/>
-  <text x="928" y="539" fill="#1A4F93" font-family="Pretendard, Segoe UI, sans-serif" font-size="24" font-weight="700">e2e-test</text>
+  <text x="700" y="360" fill="#1A549B" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700" letter-spacing="2">2. EXECUTION</text>
+  <text x="700" y="422" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="44" font-weight="800">Backend + Frontend + E2E</text>
+  <text x="700" y="474" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">Use the same feature documents to drive API changes,</text>
+  <text x="700" y="510" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">UI states, and QA coverage across projects.</text>
+  <rect x="700" y="548" width="156" height="54" rx="24" fill="#E6F0FF"/>
+  <text x="736" y="582" fill="#1A4F93" font-family="Pretendard, Segoe UI, sans-serif" font-size="24" font-weight="700">backend</text>
+  <rect x="874" y="548" width="162" height="54" rx="24" fill="#E6F0FF"/>
+  <text x="910" y="582" fill="#1A4F93" font-family="Pretendard, Segoe UI, sans-serif" font-size="24" font-weight="700">frontend</text>
+  <rect x="1054" y="548" width="70" height="54" rx="24" fill="#E6F0FF"/>
+  <text x="1074" y="582" fill="#1A4F93" font-family="Pretendard, Segoe UI, sans-serif" font-size="24" font-weight="700">QA</text>
+  <text x="700" y="632" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="21">AI helps translate requirements into structured work,</text>
+  <text x="700" y="664" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="21">but the source of truth stays in documents and verification.</text>
 
-  <text x="560" y="598" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="20">AI helps translate requirements into structured work,</text>
-  <text x="560" y="628" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="20">but the source of truth stays in the documents and verification steps.</text>
+  <text x="1280" y="360" fill="#1D6B3A" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700" letter-spacing="2">3. VALIDATION</text>
+  <text x="1280" y="422" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="44" font-weight="800">Docker + k3d</text>
+  <text x="1280" y="474" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">Verify the same feature locally in service mode</text>
+  <text x="1280" y="510" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">and in a k3s-style QA environment.</text>
+  <rect x="1280" y="548" width="134" height="44" rx="22" fill="#DFF4E5"/>
+  <text x="1315" y="577" fill="#166336" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">Docker</text>
+  <rect x="1428" y="548" width="98" height="44" rx="22" fill="#DFF4E5"/>
+  <text x="1460" y="577" fill="#166336" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">k3d</text>
+  <rect x="1540" y="548" width="64" height="44" rx="22" fill="#DFF4E5"/>
+  <text x="1558" y="577" fill="#166336" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">QA</text>
+  <rect x="1618" y="548" width="66" height="44" rx="22" fill="#DFF4E5"/>
+  <text x="1631" y="577" fill="#166336" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">k3s</text>
 
-  <g filter="url(#cardShadow)">
-    <rect x="1130" y="300" width="360" height="300" rx="32" fill="url(#verifyCard)"/>
-  </g>
-  <text x="1168" y="356" fill="#1D6B3A" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700" letter-spacing="2">3. VALIDATION</text>
-  <text x="1168" y="412" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="42" font-weight="800">Docker + k3d</text>
-  <text x="1168" y="458" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="22">Verify the same feature locally,</text>
-  <text x="1168" y="494" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="22">in services and in a k3s-style QA environment.</text>
-  <rect x="1168" y="528" width="128" height="40" rx="20" fill="#DEF4E4"/>
-  <text x="1202" y="554" fill="#166336" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">Docker</text>
-  <rect x="1312" y="528" width="92" height="40" rx="20" fill="#DEF4E4"/>
-  <text x="1342" y="554" fill="#166336" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">k3d</text>
-  <rect x="1418" y="528" width="48" height="40" rx="20" fill="#DEF4E4"/>
-  <text x="1430" y="554" fill="#166336" font-family="Pretendard, Segoe UI, sans-serif" font-size="20" font-weight="700">QA</text>
+  <path d="M560 470H640" stroke="#314761" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <path d="M1140 470H1220" stroke="#314761" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
 
-  <path d="M470 448H520" stroke="#314761" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-  <path d="M1080 448H1130" stroke="#314761" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-
-  <g filter="url(#cardShadow)">
-    <rect x="190" y="690" width="1220" height="132" rx="28" fill="rgba(255,255,255,0.82)"/>
-  </g>
-  <text x="236" y="744" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="28" font-weight="800">Why this matters</text>
-  <text x="236" y="790" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">Modern teams waste time translating requirements into implementation. This workspace shows a repeatable way to reduce ambiguity,</text>
-  <text x="236" y="824" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="23">coordinate API/UI/QA changes, and use AI assistance inside a deterministic delivery workflow.</text>
+  <rect x="120" y="726" width="1560" height="156" rx="30" fill="rgba(255,255,255,0.86)" stroke="#D8DFEA" stroke-width="2"/>
+  <text x="162" y="786" fill="#18263A" font-family="Pretendard, Segoe UI, sans-serif" font-size="30" font-weight="800">Why this matters</text>
+  <text x="162" y="834" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="24">Modern teams waste time translating requirements into implementation. This workspace shows a repeatable way to reduce ambiguity,</text>
+  <text x="162" y="868" fill="#4B5C75" font-family="Pretendard, Segoe UI, sans-serif" font-size="24">coordinate API, UI, QA, and infra changes, and use AI assistance inside a deterministic delivery workflow.</text>
 </svg>

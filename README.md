@@ -34,6 +34,14 @@ This repo runs as a working stack, not just as documentation.
 - The same stack is validated in a local `k3d` cluster through the Helm chart.
 
 ![Frontend demo against the live backend](docs/assets/frontend-demo.png)
+![Task creation demo through the live UI and API](docs/assets/frontend-task-created-demo.png)
+
+## Impact
+
+- Reduces ambiguity between product and engineering by keeping feature intent explicit in PRDs and specs.
+- Enables deterministic execution across backend, frontend, and QA with one shared feature package.
+- Improves QA reproducibility by validating the same slice locally and in an isolated `k3d` environment.
+- Increases individual engineer leverage through structured, AI-assisted workflows instead of ad hoc generation.
 
 ## Currently Implemented
 

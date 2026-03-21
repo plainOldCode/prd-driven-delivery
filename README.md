@@ -25,13 +25,13 @@ make backend-run
 
 # 3) frontend
 cd frontend
-pnpm install
-pnpm dev
+corepack pnpm install
+corepack pnpm dev
 
 # 4) e2e smoke
 cd ../e2e-test
-pnpm install
-pnpm test
+corepack pnpm install
+corepack pnpm test
 ```
 
 ## Directory Map
@@ -56,7 +56,29 @@ make backend-logs
 make backend-test
 make frontend-dev
 make e2e-test
+make k3d-up
 make helm-template
+make helm-deploy-local
+make helm-smoke-local
+```
+
+## Local k3d Validation
+
+This workspace has been validated on an Apple Silicon Mac with Docker Desktop by running k3s through `k3d`.
+
+```bash
+# 1) create/switch the local cluster
+make k3d-up
+
+# 2) build/import local images and deploy the Helm release
+make helm-deploy-local
+
+# 3) check rollout status and probe ingress
+make helm-smoke-local
+
+# frontend + API through the k3d load balancer
+open http://127.0.0.1:8088
+curl -H "Host: example-workspace.local" http://127.0.0.1:8088/api/health
 ```
 
 ## Notes
@@ -64,5 +86,5 @@ make helm-template
 - `backend`, `frontend`, and `e2e-test` are intentionally separated to mirror a real service workspace.
 - The backend now runs against the MariaDB project by default and can be started either with Docker Compose or `./gradlew bootRun`.
 - The backend targets Java 21; the Docker path avoids needing a host Gradle install and the `backend-test` target also runs inside Docker.
-- `infrastructure/k3s` demonstrates how a dedicated test environment can exist separately from local Docker-based development.
+- `infrastructure/k3s` demonstrates how a dedicated test environment can exist separately from local Docker-based development, and the local `k3d` path has been verified end-to-end.
 - This skeleton keeps CI, deployment, and secrets handling intentionally minimal because it is designed as a portfolio-ready example.

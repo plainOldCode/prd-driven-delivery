@@ -19,6 +19,7 @@ This workspace is a simplified example for a multi-project development setup.
 2. Treat `backend`, `frontend`, `database`, and `e2e-test` as independent projects.
 3. When the API changes, also review `frontend/src/api/` and `e2e-test/tests/`.
 4. When the test environment changes, update `infrastructure/k3s/helm/example-stack` and `infrastructure/k3s/scripts` together.
+5. On macOS with Docker Desktop, prefer validating the k3s flow through `k3d` unless the user explicitly wants Docker Desktop Kubernetes.
 
 ## Common Commands
 
@@ -28,6 +29,9 @@ make db-up
 make backend-run
 make frontend-dev
 make e2e-test
+make k3d-up
+make helm-deploy-local
+make helm-smoke-local
 make helm-template
 ```
 

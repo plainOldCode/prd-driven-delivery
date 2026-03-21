@@ -12,6 +12,32 @@ This is a simplified multi-project workspace inspired by the structure of `upbox
 This example is a skeleton meant to demonstrate how multiple repositories can be managed within a single workspace.
 In a real project, each directory can be split into an independent Git repository or submodule.
 
+## Objective
+
+The main objective of this workspace is docs-first product development.
+
+The idea is simple:
+
+- write a Product Requirements Document in `docs/prd/`
+- use that PRD as the source of truth for the feature
+- generate or implement the related changes in `backend`, `frontend`, and `e2e-test`
+
+This means the starting point for a new feature is not code. The starting point is a clear product document that explains what should happen, what is out of scope, and how the result should be validated.
+
+If you are acting as the product side of the workflow, your job is to write the PRD. You do not begin by editing application code. You describe the feature well enough that the implementation and tests can be created from the document.
+
+## How To Make A Feature
+
+1. Create a new PRD file under `docs/prd/`, for example `docs/prd/user-profile.md`.
+2. Describe the feature in product terms first: background, user problem, goals, and non-goals.
+3. Define the expected backend behavior: endpoints, request and response shape, validation rules, and database impact if needed.
+4. Define the expected frontend behavior: screens, states, empty/error/loading cases, and the API data it needs.
+5. Define the expected `e2e-test` coverage: the main user flow, important API checks, and acceptance criteria.
+6. Mark anything intentionally out of scope so the implementation stays focused.
+7. Use the PRD as the handoff document for building the feature across `backend`, `frontend`, and `e2e-test`.
+
+In short: this workspace exists so that one good PRD in `docs/` can drive one complete feature across multiple projects.
+
 ## Quick Start
 
 ```bash

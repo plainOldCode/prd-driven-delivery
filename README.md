@@ -34,7 +34,16 @@ This repo runs as a working stack, not just as documentation.
 - The same stack is validated in a local `k3d` cluster through the Helm chart.
 
 ![Frontend demo against the live backend](docs/assets/frontend-demo.png)
-![Task creation demo through the live UI and API](docs/assets/frontend-task-created-demo.png)
+
+<a href="docs/assets/frontend-task-created-demo.png">
+  <img
+    src="docs/assets/frontend-task-created-demo.png"
+    alt="Task creation demo through the live UI and API"
+    width="420"
+  />
+</a>
+
+Click the task-creation image to open the full-resolution screenshot.
 
 ## Impact
 

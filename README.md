@@ -32,6 +32,8 @@ This repo runs as a working stack, not just as documentation.
 - Frontend consumes `/api/health` and `/api/tasks` through the Vue API layer.
 - Playwright smoke tests cover both API and UI paths.
 - The same stack is validated in a local `k3d` cluster through the Helm chart.
+- Preview environments can be derived from a branch or pull request so reviewers can open a live URL instead of inferring the result from a diff.
+- Local preview rehearsals expose direct browser URLs and a small dashboard for observing active previews.
 
 ![Frontend demo against the live backend](docs/assets/frontend-demo.png)
 
@@ -62,6 +64,8 @@ The current codebase proves the delivery path with a small working slice:
 - Vue rendering of live backend health, business-task intake, and planning-oriented task rows
 - Playwright smoke coverage for API health, API task reads, API task creation, and UI create/read paths
 - Local Docker and `k3d` validation through the Helm chart
+- branch or PR-based preview-environment scripts plus GitHub Actions wiring for deploy, comment, and cleanup
+- local preview dashboard generation and guarded approval-to-merge workflow support
 
 ## Documented Next Feature
 
@@ -148,6 +152,7 @@ The supporting note for that workflow lives in [`docs/ai-workflow.md`](docs/ai-w
 Current documentation examples:
 
 - Implemented business-task slice: [`docs/prd/business-task-intake-and-planning.md`](docs/prd/business-task-intake-and-planning.md) and [`docs/spec/business-task-intake-and-planning.md`](docs/spec/business-task-intake-and-planning.md)
+- Implemented preview-delivery slice: [`docs/prd/pull-request-preview-environments.md`](docs/prd/pull-request-preview-environments.md) and [`docs/spec/pull-request-preview-environments.md`](docs/spec/pull-request-preview-environments.md)
 - Planned implementation slice: [`docs/prd/task-lifecycle-and-status-rules.md`](docs/prd/task-lifecycle-and-status-rules.md) and [`docs/spec/task-lifecycle-and-status-rules.md`](docs/spec/task-lifecycle-and-status-rules.md)
 
 ## Workspace Shape
@@ -204,6 +209,15 @@ open http://127.0.0.1:8088
 curl -H "Host: prd-driven-delivery.local" http://127.0.0.1:8088/api/health
 ```
 
+Preview rehearsal uses the same scripts as the PR workflow:
+
+```bash
+make pr-env-create-local PREVIEW_PR_NUMBER=204
+make pr-env-test PREVIEW_PR_NUMBER=204
+make pr-env-dashboard-open
+make pr-env-delete PREVIEW_PR_NUMBER=204
+```
+
 ## Workspace Commands
 
 ```bash
@@ -218,6 +232,10 @@ make k3d-up
 make helm-template
 make helm-deploy-local
 make helm-smoke-local
+make pr-env-create-local PREVIEW_PR_NUMBER=204
+make pr-env-test PREVIEW_PR_NUMBER=204
+make pr-env-dashboard-open
+make pr-env-delete PREVIEW_PR_NUMBER=204
 ```
 
 ## Why This Exists

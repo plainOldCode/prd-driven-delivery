@@ -13,9 +13,14 @@ spec:
       labels:
         app: {{ include "example-stack.fullname" . }}-database
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: mariadb
           image: {{ .Values.database.image }}
+          imagePullPolicy: {{ .Values.database.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.database.port }}
           env:

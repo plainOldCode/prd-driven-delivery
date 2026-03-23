@@ -1,10 +1,14 @@
+imagePullSecrets: []
+
 backend:
   image: ghcr.io/example/example-backend:latest
   port: 8080
+  imagePullPolicy: IfNotPresent
 
 frontend:
   image: ghcr.io/example/example-frontend:latest
   port: 80
+  imagePullPolicy: IfNotPresent
 
 database:
   image: mariadb:11.4
@@ -13,16 +17,19 @@ database:
   username: example
   password: example
   rootPassword: root
+  imagePullPolicy: IfNotPresent
 
 nginx:
   image: nginx:1.27-alpine
   port: 80
+  imagePullPolicy: IfNotPresent
 
 ingress:
   enabled: true
   className: traefik
   host: prd-driven-delivery.local
   pathType: Prefix
+  annotations: {}
 
 resources:
   requests:

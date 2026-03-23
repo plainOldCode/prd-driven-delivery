@@ -7,8 +7,18 @@ HELM_NAMESPACE ?= $(HELM_RELEASE)
 BACKEND_IMAGE ?= prd-delivery-backend:local
 FRONTEND_IMAGE ?= prd-delivery-frontend:local
 INGRESS_HOST ?= prd-driven-delivery.local
+PREVIEW_PR_NUMBER ?= 101
+PREVIEW_BRANCH_NAME ?=
+PREVIEW_NAMESPACE_PREFIX ?= example-preview
+PREVIEW_BASE_DOMAIN ?= previews.prd-driven-delivery.local
+PREVIEW_INGRESS_CLASS ?= traefik
+PREVIEW_BACKEND_IMAGE ?= $(BACKEND_IMAGE)
+PREVIEW_FRONTEND_IMAGE ?= $(FRONTEND_IMAGE)
+PREVIEW_LOCAL_BASE_DOMAIN ?= localhost
+PREVIEW_LOCAL_PUBLIC_PORT ?= $(K3D_HOST_PORT)
+PREVIEW_DASHBOARD_OUTPUT ?= /tmp/prd-driven-delivery-preview-dashboard.html
 
-.PHONY: help db-up db-down db-logs backend-run backend-down backend-logs backend-test frontend-dev e2e-test k3d-up k3d-down k3d-status helm-template helm-deploy-local helm-delete-local helm-smoke-local pr-env-create pr-env-delete
+.PHONY: help db-up db-down db-logs backend-run backend-down backend-logs backend-test frontend-dev e2e-test k3d-up k3d-down k3d-status helm-template helm-deploy-local helm-delete-local helm-smoke-local pr-env-create pr-env-create-local pr-env-test pr-env-delete pr-env-dashboard pr-env-dashboard-open
 
 help:
 	@echo ""
@@ -30,8 +40,12 @@ help:
 	@echo "make helm-deploy-local Build images and deploy Helm chart to k3d"
 	@echo "make helm-delete-local Remove the local Helm release"
 	@echo "make helm-smoke-local Probe the local ingress endpoints"
-	@echo "make pr-env-create   Print PR environment install command"
-	@echo "make pr-env-delete   Print PR environment delete command"
+	@echo "make pr-env-create   Deploy a preview release using preview env vars"
+	@echo "make pr-env-create-local Build/import local images and deploy a preview to k3d"
+	@echo "make pr-env-test     Wait for the preview rollout and curl the local ingress"
+	@echo "make pr-env-delete   Remove the preview namespace"
+	@echo "make pr-env-dashboard Generate a local HTML dashboard for active previews"
+	@echo "make pr-env-dashboard-open Generate and open the local preview dashboard"
 
 db-up:
 	cd database/dockerized && docker compose up -d
@@ -97,7 +111,51 @@ helm-smoke-local:
 	@printf '\n'
 
 pr-env-create:
-	bash infrastructure/k3s/scripts/pr-env-create.sh 101
+	PREVIEW_PR_NUMBER="$(PREVIEW_PR_NUMBER)" \
+	PREVIEW_BRANCH_NAME="$(PREVIEW_BRANCH_NAME)" \
+	PREVIEW_NAMESPACE_PREFIX="$(PREVIEW_NAMESPACE_PREFIX)" \
+	PREVIEW_BASE_DOMAIN="$(PREVIEW_BASE_DOMAIN)" \
+	PREVIEW_INGRESS_CLASS="$(PREVIEW_INGRESS_CLASS)" \
+	PREVIEW_BACKEND_IMAGE="$(PREVIEW_BACKEND_IMAGE)" \
+	PREVIEW_FRONTEND_IMAGE="$(PREVIEW_FRONTEND_IMAGE)" \
+	bash infrastructure/k3s/scripts/pr-env-create.sh
+
+pr-env-create-local: k3d-up
+	docker build -t "$(PREVIEW_BACKEND_IMAGE)" backend
+	docker build -f infrastructure/k3s/dockerfiles/frontend.Dockerfile -t "$(PREVIEW_FRONTEND_IMAGE)" .
+	k3d image import "$(PREVIEW_BACKEND_IMAGE)" "$(PREVIEW_FRONTEND_IMAGE)" -c "$(K3D_CLUSTER)"
+	PREVIEW_PR_NUMBER="$(PREVIEW_PR_NUMBER)" \
+	PREVIEW_BRANCH_NAME="$(PREVIEW_BRANCH_NAME)" \
+	PREVIEW_NAMESPACE_PREFIX="$(PREVIEW_NAMESPACE_PREFIX)" \
+	PREVIEW_BASE_DOMAIN="$(PREVIEW_LOCAL_BASE_DOMAIN)" \
+	PREVIEW_INGRESS_CLASS="$(PREVIEW_INGRESS_CLASS)" \
+	PREVIEW_URL_SCHEME="http" \
+	PREVIEW_PUBLIC_PORT="$(PREVIEW_LOCAL_PUBLIC_PORT)" \
+	PREVIEW_BACKEND_IMAGE="$(PREVIEW_BACKEND_IMAGE)" \
+	PREVIEW_FRONTEND_IMAGE="$(PREVIEW_FRONTEND_IMAGE)" \
+	PREVIEW_BACKEND_IMAGE_PULL_POLICY="IfNotPresent" \
+	PREVIEW_FRONTEND_IMAGE_PULL_POLICY="IfNotPresent" \
+	bash infrastructure/k3s/scripts/pr-env-create.sh
+
+pr-env-test:
+	PREVIEW_PR_NUMBER="$(PREVIEW_PR_NUMBER)" \
+	PREVIEW_BRANCH_NAME="$(PREVIEW_BRANCH_NAME)" \
+	PREVIEW_NAMESPACE_PREFIX="$(PREVIEW_NAMESPACE_PREFIX)" \
+	PREVIEW_BASE_DOMAIN="$(PREVIEW_LOCAL_BASE_DOMAIN)" \
+	PREVIEW_URL_SCHEME="http" \
+	PREVIEW_PUBLIC_PORT="$(PREVIEW_LOCAL_PUBLIC_PORT)" \
+	PREVIEW_DIRECT_URL="true" \
+	bash infrastructure/k3s/scripts/pr-env-test.sh
 
 pr-env-delete:
-	bash infrastructure/k3s/scripts/pr-env-delete.sh example-pr-101
+	PREVIEW_PR_NUMBER="$(PREVIEW_PR_NUMBER)" \
+	PREVIEW_BRANCH_NAME="$(PREVIEW_BRANCH_NAME)" \
+	PREVIEW_NAMESPACE_PREFIX="$(PREVIEW_NAMESPACE_PREFIX)" \
+	bash infrastructure/k3s/scripts/pr-env-delete.sh
+
+pr-env-dashboard:
+	PREVIEW_DASHBOARD_OUTPUT="$(PREVIEW_DASHBOARD_OUTPUT)" \
+	bash infrastructure/k3s/scripts/pr-env-dashboard.sh "$(PREVIEW_DASHBOARD_OUTPUT)"
+
+pr-env-dashboard-open: pr-env-dashboard
+	open "$(PREVIEW_DASHBOARD_OUTPUT)"

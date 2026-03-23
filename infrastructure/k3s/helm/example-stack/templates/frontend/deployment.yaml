@@ -17,10 +17,27 @@ spec:
       labels:
         app: {{ include "example-stack.fullname" . }}-frontend
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: frontend
           image: {{ .Values.frontend.image }}
+          imagePullPolicy: {{ .Values.frontend.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.frontend.port }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

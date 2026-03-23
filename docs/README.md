@@ -11,3 +11,9 @@ Expected workflow:
 1. Write the product requirement in `prd/`.
 2. Refine it into an implementation-facing spec in `spec/`.
 3. Use those documents to drive `backend`, `frontend`, `e2e-test`, and `infrastructure` changes.
+
+Current feature packages:
+
+- implemented product intake slice: `business-task-intake-and-planning`
+- implemented preview-delivery slice: `pull-request-preview-environments`
+- planned lifecycle slice: `task-lifecycle-and-status-rules`

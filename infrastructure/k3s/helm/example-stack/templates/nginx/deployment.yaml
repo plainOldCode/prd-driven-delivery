@@ -17,11 +17,28 @@ spec:
       labels:
         app: {{ include "example-stack.fullname" . }}-nginx
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: nginx
           image: {{ .Values.nginx.image }}
+          imagePullPolicy: {{ .Values.nginx.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.nginx.port }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.nginx.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.nginx.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

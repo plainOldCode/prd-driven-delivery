@@ -9,6 +9,7 @@ It is not meant to be a large production clone. It is meant to show a working de
 - drive implementation across `backend`, `frontend`, and `e2e-test`
 - validate the result locally with Docker and k3d
 - expose branch or pull-request previews so reviewers can judge the running result, not just the diff
+- surface active previews in a dashboard so humans can decide merge or discard quickly
 - use AI assistance inside that structured workflow instead of treating AI output as the workflow itself
 
 The core claim of this workspace is simple:
@@ -23,6 +24,7 @@ The core claim of this workspace is simple:
 - Product requirements can be made explicit enough to drive API, UI, and test changes.
 - The same feature can be validated both in local service mode and in a k3s-style environment.
 - Preview URLs can be generated deterministically from a branch or pull request and cleaned up after merge.
+- A preview dashboard can turn review into a visual decision step instead of a pure diff-reading exercise.
 - A single engineer can keep backend, frontend, QA, and infrastructure aligned through shared documents and conventions.
 - AI-assisted workflows can be useful when they are grounded in explicit PRDs, specs, contracts, and validation steps.
 
@@ -49,11 +51,30 @@ This repo runs as a working stack, not just as documentation.
 
 Click the task-creation image to open the full-resolution screenshot.
 
+## Preview Dashboard
+
+The preview dashboard is the key decision-making surface in this workflow.
+
+- It lists active preview environments derived from branches or pull requests.
+- It shows readiness, source type, namespace, release, host, and direct URL in one place.
+- It lets PMs, designers, and reviewers open the running result without knowing `kubectl`, Helm, or host-header tricks.
+- It shifts the human decision from "should we build this?" to "should we merge or discard this running slice?"
+
+Local rehearsal:
+
+```bash
+make pr-env-create-local PREVIEW_PR_NUMBER=204
+make pr-env-dashboard-open
+```
+
+After approval and merge, the same preview flow is expected to clean the environment back out of `k3d`.
+
 ## Impact
 
 - Reduces ambiguity between product and engineering by keeping feature intent explicit in PRDs and specs.
 - Enables deterministic execution across backend, frontend, and QA with one shared feature package.
 - Improves QA reproducibility by validating the same slice locally and in an isolated `k3d` environment.
+- Makes human approval faster by turning previews into a visible queue of merge-or-discard decisions.
 - Increases individual engineer leverage through structured, AI-assisted workflows instead of ad hoc generation.
 
 ## Currently Implemented
@@ -102,6 +123,8 @@ flowchart LR
   FE["frontend/"]
   QA["e2e-test/"]
   INFRA["infrastructure/k3s/"]
+  PREVIEW["Preview URL + dashboard"]
+  REVIEW["Human decision<br/>merge or discard"]
   VERIFY["Local validation<br/>Docker Compose + k3d"]
 
   PRD --> SPEC
@@ -113,6 +136,11 @@ flowchart LR
   FE --> VERIFY
   QA --> VERIFY
   INFRA --> VERIFY
+  INFRA --> PREVIEW
+  BE --> PREVIEW
+  FE --> PREVIEW
+  QA --> PREVIEW
+  PREVIEW --> REVIEW
 ```
 
 ## Docs-First Rule
@@ -227,7 +255,7 @@ Preview is treated here as part of delivery, not as an infra afterthought.
 - Each preview is derived from a branch name or pull-request number.
 - The preview namespace, release name, host, and URL are computed deterministically.
 - Local preview rehearsals use `k3d` plus direct `.localhost` URLs for fast visual checks.
-- A small dashboard shows active previews, readiness, and direct links.
+- A small dashboard shows active previews, readiness, and direct links so humans can decide merge or discard quickly.
 - When a pull request is approved and merged, the preview environment is expected to be removed as part of the same workflow.
 
 ## Workspace Commands

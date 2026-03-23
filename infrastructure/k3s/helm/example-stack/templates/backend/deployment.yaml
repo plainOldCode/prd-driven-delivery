@@ -17,11 +17,34 @@ spec:
       labels:
         app: {{ include "example-stack.fullname" . }}-backend
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: backend
           image: {{ .Values.backend.image }}
+          imagePullPolicy: {{ .Values.backend.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.backend.port }}
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.backend.port }}
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.backend.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.backend.port }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: mariadb

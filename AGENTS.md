@@ -34,6 +34,10 @@ make k3d-up
 make helm-deploy-local
 make helm-smoke-local
 make helm-template
+make pr-env-create-local PREVIEW_PR_NUMBER=204
+make pr-env-test PREVIEW_PR_NUMBER=204
+make pr-env-dashboard-open
+make pr-env-delete PREVIEW_PR_NUMBER=204
 ```
 
 ## Goal

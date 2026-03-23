@@ -1,0 +1,219 @@
+name: preview-environment
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve preview inputs
+        id: preview
+        env:
+          KUBECONFIG_B64: ${{ secrets.PREVIEW_KUBECONFIG_B64 }}
+          BASE_DOMAIN: ${{ vars.PREVIEW_BASE_DOMAIN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          OWNER="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          TAG="pr-${PR_NUMBER}-${GITHUB_SHA::7}"
+          if [[ -n "${KUBECONFIG_B64}" && -n "${BASE_DOMAIN}" ]]; then
+            echo "enabled=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "enabled=false" >> "${GITHUB_OUTPUT}"
+          fi
+          echo "owner=${OWNER}" >> "${GITHUB_OUTPUT}"
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "backend_image=ghcr.io/${OWNER}/prd-driven-delivery-backend:${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "frontend_image=ghcr.io/${OWNER}/prd-driven-delivery-frontend:${TAG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Preview disabled
+        if: steps.preview.outputs.enabled != 'true'
+        run: |
+          echo "Preview deployment skipped. Configure PREVIEW_KUBECONFIG_B64 and PREVIEW_BASE_DOMAIN to enable it."
+
+      - uses: docker/login-action@v3
+        if: steps.preview.outputs.enabled == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build backend preview image
+        if: steps.preview.outputs.enabled == 'true'
+        run: docker build -t "${{ steps.preview.outputs.backend_image }}" backend
+
+      - name: Build frontend preview image
+        if: steps.preview.outputs.enabled == 'true'
+        run: docker build -f infrastructure/k3s/dockerfiles/frontend.Dockerfile -t "${{ steps.preview.outputs.frontend_image }}" .
+
+      - name: Push preview images
+        if: steps.preview.outputs.enabled == 'true'
+        run: |
+          docker push "${{ steps.preview.outputs.backend_image }}"
+          docker push "${{ steps.preview.outputs.frontend_image }}"
+
+      - uses: azure/setup-kubectl@v4
+        if: steps.preview.outputs.enabled == 'true'
+
+      - uses: azure/setup-helm@v4
+        if: steps.preview.outputs.enabled == 'true'
+
+      - name: Configure preview kubeconfig
+        if: steps.preview.outputs.enabled == 'true'
+        env:
+          KUBECONFIG_B64: ${{ secrets.PREVIEW_KUBECONFIG_B64 }}
+        run: |
+          mkdir -p "${HOME}/.kube"
+          echo "${KUBECONFIG_B64}" | base64 --decode > "${HOME}/.kube/config"
+
+      - name: Deploy preview environment
+        if: steps.preview.outputs.enabled == 'true'
+        id: deploy
+        env:
+          PREVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
+          PREVIEW_BRANCH_NAME: ${{ github.head_ref }}
+          PREVIEW_BASE_DOMAIN: ${{ vars.PREVIEW_BASE_DOMAIN }}
+          PREVIEW_INGRESS_CLASS: ${{ vars.PREVIEW_INGRESS_CLASS }}
+          PREVIEW_URL_SCHEME: ${{ vars.PREVIEW_URL_SCHEME }}
+          PREVIEW_IMAGE_PULL_SECRET: ${{ vars.PREVIEW_IMAGE_PULL_SECRET }}
+          PREVIEW_BACKEND_IMAGE: ${{ steps.preview.outputs.backend_image }}
+          PREVIEW_FRONTEND_IMAGE: ${{ steps.preview.outputs.frontend_image }}
+          PREVIEW_BACKEND_IMAGE_PULL_POLICY: Always
+          PREVIEW_FRONTEND_IMAGE_PULL_POLICY: Always
+        run: |
+          PREVIEW_OUTPUT_FILE="${GITHUB_OUTPUT}" bash infrastructure/k3s/scripts/pr-env-create.sh
+
+      - name: Validate preview rollout
+        if: steps.preview.outputs.enabled == 'true'
+        env:
+          PREVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
+          PREVIEW_BRANCH_NAME: ${{ github.head_ref }}
+          PREVIEW_BASE_DOMAIN: ${{ vars.PREVIEW_BASE_DOMAIN }}
+        run: bash infrastructure/k3s/scripts/pr-env-test.sh
+
+      - name: Comment preview URL on pull request
+        if: steps.preview.outputs.enabled == 'true'
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+          PREVIEW_HOST: ${{ steps.deploy.outputs.preview_host }}
+          PREVIEW_NAMESPACE: ${{ steps.deploy.outputs.preview_namespace }}
+          PREVIEW_RELEASE: ${{ steps.deploy.outputs.preview_release }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- prd-driven-delivery-preview -->';
+            const body = `${marker}
+            Preview environment updated.
+
+            - URL: ${process.env.PREVIEW_URL}
+            - Host: ${process.env.PREVIEW_HOST}
+            - Namespace: ${process.env.PREVIEW_NAMESPACE}
+            - Release: ${process.env.PREVIEW_RELEASE}`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find((comment) => comment.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  delete-preview:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve cleanup inputs
+        id: preview
+        env:
+          KUBECONFIG_B64: ${{ secrets.PREVIEW_KUBECONFIG_B64 }}
+        run: |
+          if [[ -n "${KUBECONFIG_B64}" ]]; then
+            echo "enabled=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "enabled=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Preview cleanup disabled
+        if: steps.preview.outputs.enabled != 'true'
+        run: echo "Preview cleanup skipped. PREVIEW_KUBECONFIG_B64 is not configured."
+
+      - uses: azure/setup-kubectl@v4
+        if: steps.preview.outputs.enabled == 'true'
+
+      - uses: azure/setup-helm@v4
+        if: steps.preview.outputs.enabled == 'true'
+
+      - name: Configure preview kubeconfig
+        if: steps.preview.outputs.enabled == 'true'
+        env:
+          KUBECONFIG_B64: ${{ secrets.PREVIEW_KUBECONFIG_B64 }}
+        run: |
+          mkdir -p "${HOME}/.kube"
+          echo "${KUBECONFIG_B64}" | base64 --decode > "${HOME}/.kube/config"
+
+      - name: Delete preview environment
+        if: steps.preview.outputs.enabled == 'true'
+        env:
+          PREVIEW_PR_NUMBER: ${{ github.event.pull_request.number }}
+          PREVIEW_BRANCH_NAME: ${{ github.head_ref }}
+        run: bash infrastructure/k3s/scripts/pr-env-delete.sh
+
+      - name: Mark preview comment as removed
+        if: steps.preview.outputs.enabled == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- prd-driven-delivery-preview -->';
+            const body = `${marker}
+            Preview environment removed after pull request close.`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find((comment) => comment.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            }

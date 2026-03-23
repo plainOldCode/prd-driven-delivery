@@ -1,0 +1,56 @@
+name: preview-approval
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  auto-merge-approved-preview:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Auto-merge approved pull request when enabled
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_AUTO_MERGE_ON_APPROVAL: ${{ vars.PREVIEW_AUTO_MERGE_ON_APPROVAL }}
+          PREVIEW_AUTO_MERGE_METHOD: ${{ vars.PREVIEW_AUTO_MERGE_METHOD }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const enabled = (process.env.PREVIEW_AUTO_MERGE_ON_APPROVAL || '').toLowerCase() === 'true';
+            if (!enabled) {
+              core.info('Auto-merge on approval is disabled. Set PREVIEW_AUTO_MERGE_ON_APPROVAL=true to enable it.');
+              return;
+            }
+
+            const mergeMethod = (process.env.PREVIEW_AUTO_MERGE_METHOD || 'SQUASH').toUpperCase();
+            const pullRequest = context.payload.pull_request;
+
+            try {
+              await github.graphql(
+                `mutation EnableAutoMerge($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+                  enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: $mergeMethod }) {
+                    pullRequest {
+                      number
+                    }
+                  }
+                }`,
+                {
+                  pullRequestId: pullRequest.node_id,
+                  mergeMethod,
+                }
+              );
+              core.info(`Enabled auto-merge for PR #${pullRequest.number} with method ${mergeMethod}.`);
+            } catch (error) {
+              core.warning(`Could not enable GitHub auto-merge: ${error.message}`);
+              core.info('Falling back to direct merge attempt.');
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pullRequest.number,
+                merge_method: mergeMethod.toLowerCase(),
+              });
+            }

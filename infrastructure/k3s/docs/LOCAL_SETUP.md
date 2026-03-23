@@ -24,3 +24,16 @@ helm upgrade --install example-dev ./helm/example-stack \
 
 kubectl get pods -n example-dev
 ```
+
+## Local Preview Rehearsal
+
+The same repo can rehearse a pull-request preview flow locally through `k3d`.
+
+```bash
+make pr-env-create-local PREVIEW_PR_NUMBER=204
+make pr-env-test PREVIEW_PR_NUMBER=204
+make pr-env-dashboard-open
+make pr-env-delete PREVIEW_PR_NUMBER=204
+```
+
+This uses the same preview scripts as the GitHub Actions workflow, but exposes direct local URLs such as `http://pr-204.localhost:8088` and adds a local HTML dashboard for observing active previews.

@@ -1,6 +1,6 @@
 # PRD-Driven Delivery Workspace
 
-This repo demonstrates how I structure docs-first delivery from product requirements to backend, frontend, QA, and local infrastructure validation.
+This repo demonstrates how I structure docs-first delivery from product requirements to backend, frontend, QA, preview environments, and local infrastructure validation.
 
 It is not meant to be a large production clone. It is meant to show a working delivery model:
 
@@ -8,6 +8,7 @@ It is not meant to be a large production clone. It is meant to show a working de
 - refine it into a spec
 - drive implementation across `backend`, `frontend`, and `e2e-test`
 - validate the result locally with Docker and k3d
+- expose branch or pull-request previews so reviewers can judge the running result, not just the diff
 - use AI assistance inside that structured workflow instead of treating AI output as the workflow itself
 
 The core claim of this workspace is simple:
@@ -21,6 +22,7 @@ The core claim of this workspace is simple:
 - A feature can start in `docs/`, not in source code.
 - Product requirements can be made explicit enough to drive API, UI, and test changes.
 - The same feature can be validated both in local service mode and in a k3s-style environment.
+- Preview URLs can be generated deterministically from a branch or pull request and cleaned up after merge.
 - A single engineer can keep backend, frontend, QA, and infrastructure aligned through shared documents and conventions.
 - AI-assisted workflows can be useful when they are grounded in explicit PRDs, specs, contracts, and validation steps.
 
@@ -64,8 +66,8 @@ The current codebase proves the delivery path with a small working slice:
 - Vue rendering of live backend health, business-task intake, and planning-oriented task rows
 - Playwright smoke coverage for API health, API task reads, API task creation, and UI create/read paths
 - Local Docker and `k3d` validation through the Helm chart
-- branch or PR-based preview-environment scripts plus GitHub Actions wiring for deploy, comment, and cleanup
-- local preview dashboard generation and guarded approval-to-merge workflow support
+- branch or PR-based preview-environment scripts plus GitHub Actions wiring for deploy, comment, merge approval, and cleanup
+- local preview URLs on `.localhost` plus dashboard generation for observing active previews
 
 ## Documented Next Feature
 
@@ -217,6 +219,16 @@ make pr-env-test PREVIEW_PR_NUMBER=204
 make pr-env-dashboard-open
 make pr-env-delete PREVIEW_PR_NUMBER=204
 ```
+
+## Preview Flow
+
+Preview is treated here as part of delivery, not as an infra afterthought.
+
+- Each preview is derived from a branch name or pull-request number.
+- The preview namespace, release name, host, and URL are computed deterministically.
+- Local preview rehearsals use `k3d` plus direct `.localhost` URLs for fast visual checks.
+- A small dashboard shows active previews, readiness, and direct links.
+- When a pull request is approved and merged, the preview environment is expected to be removed as part of the same workflow.
 
 ## Workspace Commands
 
